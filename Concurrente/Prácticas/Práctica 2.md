@@ -791,26 +791,36 @@ Process persona::[id : 0..49] {
 
 ---
 # Ejercicio 12
-> Simular la atención en una Terminal de Micros que posee 3 puestos para hisopar a 150 pasajeros. En cada puesto hay una Enfermera que atiende a los pasajeros de acuerdo con el orden de llegada al mismo. Cuando llega un pasajero se dirige al Recepcionista, quien le indica qué puesto es el que tiene menos gente esperando. Luego se dirige al puesto y espera a que la enfermera correspondiente lo llame para hisoparlo. Finalmente, se retira. 
-> b) Modifique la solución anterior para que sólo haya procesos Pasajeros y Enfermera, siendo los pasajeros quienes determinan por su cuenta qué puesto tiene menos personas esperando. Nota: suponga que existe una función Hisopar() que simula la atención del pasajero por parte de la enfermera correspondiente.
+> Simular la atención en una Terminal de Micros que posee 3 puestos para hisopar a 150 pasajeros. En cada puesto hay una Enfermera que atiende a los pasajeros de acuerdo con el orden de llegada al mismo. Cuando llega un pasajero se dirige al Recepcionista, quien le indica qué puesto es el que tiene menos gente esperando. Luego se dirige al puesto y espera a que la enfermera correspondiente lo llame para hisoparlo. Finalmente, se retira. Nota: suponga que existe una función Hisopar() que simula la atención del pasajero por parte de la enfermera correspondiente.
 
 > a) Implemente una solución considerando los procesos Pasajeros, Enfermera y Recepcionista.
 ```c
-Queue puestoUno, puestoDos, puestoTres, colaRecepcionista;
-Sem mutexUno = 1, mutexDos = 1, mutexTres = 1, mutexRecepcionista = 1, hayGenteRecepcionista = 0;
-int cantUno = 0, cantDos = 0, cantTres = 0; 
+Array<Queue> puesto[1..3];
+Array<int> esperando[1..3] = ([3] = 0)
+Queue colaRecepcionista;
+Sem mutex[1..3] = ([3] = 1), mutexRecepcionista = 1, hayGenteRecepcionista = 0 hayGentePuesto[1..3] = ([3] = 0), hisopado[150] = ([150] = 0);
+ 
 
-Process pasajero::[ id : 0..149 ] {
+Process pasajero::[ id : 1..150 ] {
 	P(mutexRecepcionista)
 	colaRecepcionista.push(id)
 	V(hayGenteRecepcionista)
 	V(mutexRecepcionista)
 
-	
+	P(hisopado[id])
 }
 
 Process enfermera::[ id : 1..3 ] {
-	
+	while (true) {
+		P(hayGentePuesto[id]) //Espero
+		P(mutex[id])
+		idPasajero = puesto[id].pop()
+		esperando[id] -= 1
+		V(mutex[id])
+		
+		hisopar()
+		V(hisopado[idPasajero])
+	}
 }
 
 Process recepcionista {
@@ -820,19 +830,58 @@ Process recepcionista {
 		P(mutexRecepcionista)
 		id = colaRecepcionista.pop()
 		V(mutexRecepcionista)
-		if (cantUno <= cantDos && cantUno <= cantTres) {
-			P(mutexUno)
-			puestoUno.push(id)
-			V(mutexUno)
-		} else if (cantDos <= cantUno && cantDos <= cantTres){
-			P(mutexDos)
-			puestoDos.push(id)
-			V(mutexDos)
+		
+		// Entiendo que este if se podría cambiar por una funcion min() o similar sobre el array esperando, pero ya lo hice asi		
+		if (esperando[1] <= esperando[2] && esperando[1] <= esperando[3]) {
+			P(mutex[1])
+			puesto[1].push(id)
+			esperando[1] += 1
+			V(mutex[1])
+		} else if (esperando[2] <= esperando[1] && esperando[2] <= esperando[3]){
+			P(mutex[2])
+			puesto[2].push(id)
+			esperando[2] += 1
+			V(mutex[2])
 		} else {
-			P(mutexTres)
-			puestoTres.push(id)
-			V(mutexTres)
+			P(mutex[3])
+			puesto[3].push(id)
+			V(mutex[3])
 		}	
 	}
 }
+```
+
+> b) Modifique la solución anterior para que sólo haya procesos Pasajeros y Enfermera, siendo los pasajeros quienes determinan por su cuenta qué puesto tiene menos personas esperando. 
+```c
+Array<Queue> puesto[1..3];
+Array<int> esperando[1..3] = ([3] = 0)
+Sem mutex[1..3] = ([3] = 1), hayGentePuesto[1..3] = ([3] = 0), hisopado[150] = ([150] = 0), mutexEsperando = 1;
+ 
+
+Process pasajero::[ id : 1..150 ] {
+	P(mutexEsperando)
+		colaElegida = min(esperando) // Elijo la cola menor
+		P(mutex[colaElegida])
+			puesto[colaElegida].push(id) // Me meto en la cola elegida
+			V(hayGentePuesto[colaElegida]) // Aviso que hay una persona
+			esperando[colaElegida] += 1 
+		V(mutex[colaElegida])
+	V(mutexEsperando)
+	
+	P(hisopado[id])
+}
+
+Process enfermera::[ id : 1..3 ] {
+	while (true) {
+		P(hayGentePuesto[id]) //Espero
+		P(mutex[id])
+		idPasajero = puesto[id].pop()
+		esperando[id] -= 1
+		V(mutex[id])
+		
+		hisopar()
+		V(hisopado[idPasajero])
+	}
+}
+
 ```
