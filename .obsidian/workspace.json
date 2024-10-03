@@ -11,12 +11,8 @@
             "id": "b42655e6e9f032cf",
             "type": "leaf",
             "state": {
-              "type": "markdown",
-              "state": {
-                "file": "Concurrente/Prácticas/Práctica 2.md",
-                "mode": "source",
-                "source": false
-              }
+              "type": "empty",
+              "state": {}
             }
           }
         ]
@@ -85,7 +81,6 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "Concurrente/Prácticas/Práctica 2.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -102,7 +97,6 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "Concurrente/Prácticas/Práctica 2.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -124,9 +118,7 @@
             "type": "leaf",
             "state": {
               "type": "outline",
-              "state": {
-                "file": "Concurrente/Prácticas/Práctica 2.md"
-              }
+              "state": {}
             }
           },
           {
@@ -155,10 +147,15 @@
       "command-palette:Abrir paleta de comandos": false
     }
   },
-  "active": "e2c927fabe1e2dde",
+  "active": "b42655e6e9f032cf",
   "lastOpenFiles": [
-    "Concurrente/practica_dos.md",
+    "Sin título 3.canvas",
+    "Sin título.md",
+    "Sin título 2.canvas",
+    "Sin título 1.canvas",
+    "Sin título.canvas",
     "Concurrente/Prácticas/Práctica 2.md",
+    "Concurrente/practica_dos.md",
     "Redes/Prácticas/Práctica 3.md",
     "Concurrente/Prácticas/Práctica 3.md",
     "Redes/Repaso/Repaso - Capa de Aplicación.md",
@@ -177,7 +174,6 @@
     "Redes/Repaso",
     "Pasted image 20240919162656.png",
     "repo",
-    "Sin título.md",
     "Redes/Teorías/Teorías.md",
     "Redes/Redes.md",
     "Redes/Teorías",
@@ -191,14 +187,9 @@
     "Concurrente/Explicaciones Prácticas/Explicaciones Prácticas.md",
     "Concurrente/Concurrente.md",
     "Concurrente/Prácticas/Prácticas.md",
-    "Sin título 3.canvas",
-    "Sin título 2.canvas",
-    "Sin título 1.canvas",
     "Concurrente/Prácticas",
     "Concurrente/Explicaciones Prácticas",
     "Concurrente/Teorías",
-    "Sin título.canvas",
-    "2024-09-19.md",
     "Pasted image 20240912153636.png",
     "Pasted image 20240912152730.png",
     "Proyecto de Software",
