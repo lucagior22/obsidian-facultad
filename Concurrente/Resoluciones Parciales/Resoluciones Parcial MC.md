@@ -1,5 +1,5 @@
 
-![[Pasted image 20241003110440.png]]
+> Resolver con **SEMÁFOROS** el siguiente problema. En una fábrica de muebles trabajan **50 empleados**. Al llegar, los empleados forman **10 grupos de 5 personas** cada uno, de acuerdo al orden de llegada (los 5 primeros en llegar forman el primer grupo, los 5 siguientes el segundo grupo, y así sucesivamente). Cuando un grupo se ha terminado de formar, todos sus integrantes se ponen a trabajar. Cada grupo debe armar **M muebles** (cada mueble es armado por un solo empleado); mientras haya muebles por armar en el grupo, los empleados los irán resolviendo (cada mueble es armado por un solo empleado). **Nota:** Cada empleado puede tardar distinto tiempo en armar un mueble. Solo se pueden usar los procesos **"Empleado"**, y todos deben terminar su ejecución. Maximizar la concurrencia.
 
 ```c
 array grupos[10] = ([10] 0);
@@ -40,7 +40,7 @@ process empleado[id:0..49]{
 
 ---
 
-![[Pasted image 20241003115145.png]]
+> Resolver con **SEMÁFOROS** el siguiente problema. En una planta verificadora de vehículos, existen **7 estaciones** donde se dirigen **150 vehículos** para ser verificados. Cuando un vehículo llega a la planta, el **coordinador** de la planta le indica a qué estación debe dirigirse. El coordinador selecciona la estación que tenga menos vehículos asignados en ese momento. Una vez que el vehículo sabe qué estación le fue asignada, se dirige a la misma y espera a que lo llamen para verificar. Luego de la revisión, la estación le entrega un comprobante que indica si pasó la revisión o no. Más allá del resultado, el vehículo se retira de la planta. **Nota:** maximizar la concurrencia.
 
 ```c
 sem hayGenteCola[7] = ([7] 0)
