@@ -13,7 +13,7 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Concurrente/Prácticas/Práctica 2.md",
+                "file": "Concurrente/Resoluciones Parciales/Resoluciones Parcial MC.md",
                 "mode": "source",
                 "source": false
               }
@@ -85,7 +85,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "Concurrente/Prácticas/Práctica 2.md",
+                "file": "Concurrente/Resoluciones Parciales/Resoluciones Parcial MC.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -102,7 +102,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "Concurrente/Prácticas/Práctica 2.md",
+                "file": "Concurrente/Resoluciones Parciales/Resoluciones Parcial MC.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -125,7 +125,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Concurrente/Prácticas/Práctica 2.md"
+                "file": "Concurrente/Resoluciones Parciales/Resoluciones Parcial MC.md"
               }
             }
           },
@@ -157,25 +157,31 @@
   },
   "active": "b42655e6e9f032cf",
   "lastOpenFiles": [
+    "Pasted image 20241003115145.png",
+    "Concurrente/Prácticas/Práctica 2.md",
+    "Concurrente/Resoluciones Parciales/Resoluciones Parcial MC.md",
+    "Pasted image 20241003110440.png",
+    "Concurrente/Prácticas/Práctica 3.md",
+    "Concurrente/Resoluciones Parciales",
+    "Concurrente/Sin título.md",
+    "Pasted image 20241003103858.png",
+    "Concurrente/Teorías/Teoría 7 - PMA.md",
+    "Concurrente/Teorías/Teoría 6 - Memoria distribuida.md",
+    "Concurrente/Teorías/Teorías.md",
     "Sin título 3.canvas",
     "Sin título.md",
     "Sin título 2.canvas",
     "Sin título 1.canvas",
     "Sin título.canvas",
-    "Concurrente/Prácticas/Práctica 2.md",
     "Concurrente/practica_dos.md",
     "Redes/Prácticas/Práctica 3.md",
-    "Concurrente/Prácticas/Práctica 3.md",
     "Redes/Repaso/Repaso - Capa de Aplicación.md",
     "Redes/Teorías/Teoría 10-9 DNS, FTP y Mail.md",
     "Pasted image 20240930090442.png",
     "Concurrente/Prácticas/Práctica 1.md",
-    "Concurrente/Teorías/Teoría 7 - PMA.md",
     "Redes/Prácticas/Prácticas.md",
     "Redes/Prácticas/Práctica 2.md",
     "Redes/Teorías/Teoría 3-9 HTTP2-DNS.md",
-    "Concurrente/Teorías/Teorías.md",
-    "Concurrente/Teorías/Teoría 6 - Memoria distribuida.md",
     "Pasted image 20240926105348.png",
     "Pasted image 20240925120642.png",
     "Concurrente/Explicaciones Prácticas/Explicación práctica - Monitores.md",
@@ -193,8 +199,6 @@
     "Proyecto de Software/Teorías",
     "Proyecto de Software/Sin título.md",
     "Concurrente/Explicaciones Prácticas/Explicaciones Prácticas.md",
-    "Concurrente/Concurrente.md",
-    "Concurrente/Prácticas/Prácticas.md",
     "Concurrente/Prácticas",
     "Concurrente/Explicaciones Prácticas",
     "Concurrente/Teorías",
@@ -202,9 +206,6 @@
     "Pasted image 20240912152730.png",
     "Proyecto de Software",
     "Pasted image 20240909191244.png",
-    "Pasted image 20240909190403.png",
-    "Pasted image 20240907092739.png",
-    "Pasted image 20240905193356.png",
-    "Redes"
+    "Pasted image 20240909190403.png"
   ]
 }
