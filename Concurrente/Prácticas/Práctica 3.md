@@ -1,10 +1,393 @@
 # 1
 > ![[Pasted image 20241003103858.png]]
-
 > a. ¿El código funciona correctamente? Justifique su respuesta. 
 
+Si, funciona correctamente. El programa no necesita de la sentencia while, dado que podria ser un if y cumpliría exactamente la misma función.
 
 > b. ¿Se podría simplificar el programa? ¿Sin monitor? ¿Menos procedimientos? ¿Sin variable condition? En caso afirmativo, rescriba el código. 
 
+Si, con un semáforo para exclusión mutua.
+```c
+Sem mutex = 1;
 
-> c. ¿La solución original respeta el orden de llegada de los vehículos? Si rescribió el código en el punto b), ¿esa solución respeta el orden de llegada?
+Process auto::[1..M] {
+	P(mutex)
+	// Pasa por el puente.
+	V(mutex)
+} 
+```
+
+---
+# 2
+
+>Existen N procesos que deben leer información de una base de datos, la cual es administrada por un motor que admite una cantidad limitada de consultas simultáneas. 
+>
+>a) Analice el problema y defina qué procesos, recursos y monitores/sincronizaciones serán necesarios/convenientes para resolverlo.
+>b) Implemente el acceso a la base por parte de los procesos, sabiendo que el motor de base de datos puede atender a lo sumo 5 consultas de lectura simultáneas.
+
+```c
+
+Process proceso::[1..N] {
+	MotorBD.iniciarLectura();
+	Leer();
+	MotorBD.finalizarLectura();
+}
+
+Monitor MotorBD {
+	int limite = 5, lectoresActual = 0;
+	cond cola;
+
+	procedure iniciarLectura() {
+		if (lectoresActual >= 5) {
+			wait(cola);
+		}
+
+		lectoresActual += 1;
+	}
+
+	procedure finalizarLectura() {
+		lectoresActual -= 1;
+	}
+
+}
+```
+
+---
+# 3
+
+> Existen N personas que deben fotocopiar un documento. La fotocopiadora sólo puede ser usada por una persona a la vez. Analice el problema y defina qué procesos, recursos y monitores serán necesarios/convenientes, además de las posibles sincronizaciones requeridas para resolver el problema. Luego, resuelva considerando las siguientes situaciones: 
+> 
+> a) Implemente una solución suponiendo no importa el orden de uso. Existe una función Fotocopiar() que simula el uso de la fotocopiadora. 
+
+```c
+Process Persona::[1..N] {
+	Fotocopiadora.Usar();
+	// Usa fotocopiadora
+	Fotocopiadora.Liberar();
+}
+
+Monitor Fotocopiadora {
+	cond cola;
+	bool libre = True;
+
+	procedure Usar() {
+		if ( !libre ) {
+			wait(cola);
+		}
+
+		libre = False;
+	}
+
+	// Dado que no importa el orden, pongo la variable que maneja el flujo en true y levanto al que sea. Un proceso puede adelantarse al que acabo de levantar y entrar dado que libre == true.
+	procedure Liberar() {
+		libre = True;
+		signal(cola);
+	}
+}
+
+```
+
+> b) Modifique la solución de (a) para el caso en que se deba respetar el orden de llegada. 
+
+```c
+Process Persona::[1..N] {
+	Fotocopiadora.Usar();
+	Fotocopiar();
+	Fotocopiadora.Liberar();
+}
+
+Monitor Fotocopiadora {
+	cond cola;
+	bool enUso = false;
+	int esperando = 0;
+
+	Procedure Usar() {
+		if (enUso) { esperando++; wait(cola) }
+		enUso = true;		
+	}
+
+	// Como en este caso SI importa el orden, me aseguro de que solo el proceso que despierto pueda avanzar. De haber un proceso que le gane al despertado en el uso del monitor, nunca va a pasar al uso de la fotocopiadora, solo el que yo desperté lo hará. 
+	Procedure Liberar() {
+		if (esperando > 0) {
+			esperando--;
+			signal(cola);
+		} else {
+			enUso = false;
+		}
+	}
+// La regla: Si hay alguien esperando, lo despierto SIN MODIFICAR LA VARIABLE que controla el flujo, si nadie espera, habilito la entrada directa MODIFICANDO LA VARIABLE de control de flujo.
+}
+```
+
+> c) Modifique la solución de (b) para el caso en que se deba dar prioridad de acuerdo con la edad de cada persona (cuando la fotocopiadora está libre la debe usar la persona de mayor edad entre las que estén esperando para usarla). 
+
+```c
+Process Persona::[id: 1..N] {
+	int edad = random(1..100)
+	Fotocopiadora.Usar(edad, id);
+	Fotocopiar();
+	Fotocopiadora.Liberar();
+}
+
+Monitor Fotocopiadora {
+	cond esperando[N];
+	bool enUso = false;
+	int esperando = 0;
+
+	Procedure Usar(int edad, int id) {
+		if (enUso) { 
+			esperando++; 
+			insertarOrdenado(cola, edad, id);
+			wait(esperando[id]);	
+		}
+		enUso = true;		
+	}
+
+	Procedure Liberar() {
+		if (esperando > 0) {
+			esperando--;
+			id = sacar(cola)
+			signal(esperando[id]);
+		} else {
+			enUso = false;
+		}
+	}
+}
+```
+
+> d) Modifique la solución de (a) para el caso en que se deba respetar estrictamente el orden dado por el identificador del proceso (la persona X no puede usar la fotocopiadora hasta que no haya terminado de usarla la persona X-1). 
+
+```c
+Process Persona::[id: 1..N] {
+	Fotocopiadora.Usar(id);
+	Fotocopiar();
+	Fotocopiadora.Liberar();
+}
+
+Monitor Fotocopiadora {
+	cond esperando[N]; // Un array de VC donde cada proceso se duerme segun su id.
+	int proximo = 1;
+
+	Procedure Usar(int id) {
+		if (proximo != id) { 
+			esperando++; 
+			wait(esperando[id]);	
+		}		
+	}
+
+	Procedure Liberar() {
+		proximo =+ 1
+		signal(esperando[proximo])
+	}
+}
+```
+
+> e) Modifique la solución de (b) para el caso en que además haya un Empleado que le indica a cada persona cuando debe usar la fotocopiadora. 
+
+```c
+Process Persona::[1..N] {
+	Fotocopiadora.Usar();
+	Fotocopiar();
+	Fotocopiadora.liberar();
+}
+
+Process Empleado {
+	while (true) {
+		Fotocopiadora.Habilitar()
+	}
+}
+
+Monitor Fotocopiadora {
+	cond cola, empleado, impresoraLibre;
+	int esperando = 0;
+
+	Procedure Usar() {
+		esperando++;
+		signal(empleado); // Aviso que llegué.
+		wait(cola); // Espero a que me llamen.
+	}
+
+	Procedure Liberar() {
+		signal(impresoraLibre) // Aviso que terminé.
+	}
+
+	Procedure Habilitar() {
+		if (esperando == 0) {
+			wait(empleado) // Espero a que alguien me despierte, lo que indica que alguien quiere usar la fotocopiadora.
+		}
+		esperando-- 
+		signal(cola) // Le aviso al próximo que avance.
+		wait(impresoraLibre) // Espero a que me avisen que se terminó el uso de la impresora.
+	}
+
+}
+```
+
+> f) Modificar la solución (e) para el caso en que sean 10 fotocopiadoras. El empleado le indica a la persona cuál fotocopiadora usar y cuándo hacerlo.
+
+```c
+Process Persona::[1..N] {
+	Fotocopiadora.Usar();
+	Fotocopiar();
+	Fotocopiadora.liberar();
+}
+
+Process Empleado {
+	while (true) {
+		Fotocopiadora.Habilitar()
+	}
+}
+
+Monitor Fotocopiadora {
+	cond esperoAsignacion[N], empleado, impresoraLibre;
+	Cola esperandoUso, impresoras[10] = ( 1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
+	Array fotocopiadoraAsignada[N] = ([N] 0)
+	int esperando = 0, impresorasLibres = 0;
+
+	Procedure Usar(int id, OUT int fotocopiadora) {
+		esperando++;
+		esperandoUso.push(id);
+		signal(empleado);
+		wait(esperoAsignacion[id]);
+		fotocopiadora = fotocopiadoraAsignada[id];
+	}
+
+	Procedure Liberar(int fotocopiadora) {
+		impresorasLibres++
+		impresoras.push(fotocopiadora)
+		signal(impresoraLibre)
+	}
+
+	Procedure Habilitar() {
+		if (esperando == 0) {
+			wait(empleado);
+		}
+		esperando--; 
+		id = esperandoUso.pop();
+		if (impresorasLibres == 0) {
+			wait(impresoraLibre)
+		}
+		impresorasLibres--
+		fotocopiadoraAsignada[id] = impresoras.pop()
+		signal(esperandoAsignacion[id])
+	}
+
+}
+```
+
+---
+# 4
+> Existen N vehículos que deben pasar por un puente de acuerdo con el orden de llegada. Considere que el puente no soporta más de 50000kg y que cada vehículo cuenta con su propio peso (ningún vehículo supera el peso soportado por el puente).
+
+```c
+Process vehiculo::[1..N] {
+	int peso = miPeso() // Obtengo el peso del vehiculo
+	Puente.entrar();
+
+	Puente.salir();
+}
+
+Monitor Puente {
+	cond cola;
+	int pesoMaximo = 50000, pesoActual = 0;
+
+	procedure entrar(int peso) {
+		if (pesoActual + peso >= pesoMaximo) {
+			wait(cola)
+		}
+		pesoActual += peso;
+	}
+
+	procedure salir(int peso) {
+		
+	}
+}
+```
+
+---
+# 5
+> En un corralón de materiales se deben atender a N clientes de acuerdo con el orden de llegada. Cuando un cliente es llamado para ser atendido, entrega una lista con los productos que comprará, y espera a que alguno de los empleados le entregue el comprobante de la compra realizada. 
+> a) Resuelva considerando que el corralón tiene un único empleado.
+
+```c
+Monitor Corralon{
+    txt lista
+    txt comprobante
+    cond empleado, termino, agarro
+    boolean listo
+    
+    procedure iniciarAtencion(IN l, OUT c) {
+        lista = l
+        listo = true
+        signal(empleado)
+        wait(termino)
+        c = comprobante
+        signal(agarro)
+    }
+    
+    procedure esperarAtencion(OUT l) {
+        if (not listo)
+            wait(empleado)
+        l = lista
+    }
+    
+    procedure entregarComprobante(IN c) {
+        comprobante = c
+        signal(termino)
+        listo = false
+        wait(agarro)
+    }
+    
+}
+
+Monitor Corralon_Cola{
+    boolean libre = true
+    cond espera
+    int esperando = 0
+    
+    procedure llegada() {
+        if not libre {
+            esperando++
+            wait(espera)
+        }
+        else {
+            libre = false
+        }
+    }
+
+    procedure salida() {
+        if not libre {
+            esperando--
+            signal(espera)
+        }
+        else {
+            libre = true
+        }
+    } 
+}
+
+Process cliente::[1..N] {
+    string lista;
+    string comprobante;
+    corralon_cola.llegada()
+    corralon.iniciarAtencion(lista,comprobante)
+    corralon_cola.salida()
+}
+
+Process Empleado {
+    while(true) {
+		Corralon.esperarAtencion(lista)
+        comprobante = //crear comprobante
+        delay(2min)
+        Corralon.entregarComprobante(comprobante)
+    }   
+}
+```
+
+>  b) Resuelva considerando que el corralón tiene E empleados (E > 1). Los empleados no deben terminar su ejecución. 
+
+```c
+
+```
+
+> c) Modifique la solución (b) considerando que los empleados deben terminar su ejecución cuando se hayan atendido todos los clientes.

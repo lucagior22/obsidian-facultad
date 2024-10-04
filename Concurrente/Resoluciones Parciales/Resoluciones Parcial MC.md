@@ -42,6 +42,8 @@ process empleado[id:0..49]{
 
 > Resolver con **SEMÁFOROS** el siguiente problema. En una planta verificadora de vehículos, existen **7 estaciones** donde se dirigen **150 vehículos** para ser verificados. Cuando un vehículo llega a la planta, el **coordinador** de la planta le indica a qué estación debe dirigirse. El coordinador selecciona la estación que tenga menos vehículos asignados en ese momento. Una vez que el vehículo sabe qué estación le fue asignada, se dirige a la misma y espera a que lo llamen para verificar. Luego de la revisión, la estación le entrega un comprobante que indica si pasó la revisión o no. Más allá del resultado, el vehículo se retira de la planta. **Nota:** maximizar la concurrencia.
 
+*Esta solución no es correcta dado que no se respeta el enunciado. En el mismo se dice que los vehiculos **saben qué estación le fue asignada, se dirige a la misma y espera a que lo llamen a verificar**. *
+
 ```c
 sem hayGenteCola[7] = ([7] 0)
 sem turnoVehiculo[150] = ([150] 0);
@@ -104,6 +106,91 @@ process coordinador{
         esperando[colaMinima] += 1;
         v(hayGenteCola[colaMinima])
         V(mutexEsperando)
+    }
+}
+```
+
+---
+> **Resolver con _MONITORES_ el siguiente problema.**  
+    Hay una boletería virtual que vende en forma online **E** entradas para un partido de fútbol a **P** personas (**P > E**) de acuerdo con el orden de llegada. Cuando la boletería atiende a una persona, si aún quedan entradas disponibles le envía el número de entrada vendida, sino le indica que no hay más entradas.  
+    **Nota**: suponga que existe la función `vender()` que simula la venta de la entrada.
+
+```c
+process persona[id: 0 .. p-1]{
+    int nro_entrada;
+    fila.entrar()
+    garita.comprar(nro_entrada)
+    salir.me_voy()
+}
+
+process boleteria{
+    int cant = E
+    while(cant<P){
+        fila.siguiente()
+        garita.vender(cant_res)
+        cant--
+        if(cant_res>0)
+            nro = vender()
+        else
+            nro = -1
+        garita.depositar(nro)
+        salir.se_fue()
+    }
+}
+monitor fila{
+    cond esp;
+    int esperando;
+
+    procedure entrar(){
+        signal(llegue)
+        esperando++
+        wait(esp)
+      }
+
+    procedure siguiente(){
+        if(esperando<1){
+            wait(llegue)
+        }
+        signal(esp)
+    }
+}
+
+monitor garita{
+    boolean llegue = false;
+    cond hay_alguien;esperar_venta;
+    int nro_boleto;
+    int id_P = -1;
+
+    procedure vender(out id){
+        if(not llegue){
+            wait(hay_alguien})
+        }
+        id = id_P
+    
+    }
+
+      procedure depositar(nro, id){
+        nro_boleto[id_p]=nro
+      }
+
+    procedure comprar(nro: out int){
+        llegue = true
+        signal(hay_alguien)
+        id_P = id
+        wait(espear_venta)
+        nro = nro_boleto
+    }
+}
+
+monitor salir{
+    cond se_fue
+    
+    procedure me_voy(){
+        signal(se_fue)
+    }
+    
+    procedure se_fue(){
+        wait(se_fue)
     }
 }
 ```
