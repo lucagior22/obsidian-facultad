@@ -283,26 +283,44 @@ Monitor Fotocopiadora {
 Process vehiculo::[1..N] {
 	int peso = miPeso() // Obtengo el peso del vehiculo
 	Puente.entrar();
-
+	// Paso por el puente
 	Puente.salir();
 }
 
 Monitor Puente {
-	cond cola;
-	int pesoMaximo = 50000, pesoActual = 0;
+	cond cola, colaAdecuados;
+	int pesoActual = 0, esperando = 0;
+	bool libre = True;
 
 	procedure entrar(int peso) {
-		if (pesoActual + peso >= pesoMaximo) {
+		if ( !libre ) {
+			esperando += 1;
 			wait(cola)
+		} else {
+			libre = false;
 		}
+
+		while ( pesoActual + peso > 50000 ) { 
+			wait(colaAdecuado) // Acá siempre hay un solo proceso
+		}
+
 		pesoActual += peso;
+		
+		esperando -= 1;
+		if (esperando > 0) {
+			signal(cola)
+		} else {
+			libre = true
+		}
 	}
 
 	procedure salir(int peso) {
-		
+		pesoActual -= peso;
+		signal(colaAdecuado)
 	}
 }
 ```
+
 
 ---
 # 5
@@ -311,8 +329,8 @@ Monitor Puente {
 
 ```c
 Monitor Corralon{
-    txt lista
-    txt comprobante
+    String lista
+    String comprobante
     cond empleado, termino, agarro
     boolean listo
     
@@ -391,3 +409,84 @@ Process Empleado {
 ```
 
 > c) Modifique la solución (b) considerando que los empleados deben terminar su ejecución cuando se hayan atendido todos los clientes.
+
+
+---
+# 6
+>Existe una comisión de 50 alumnos que deben realizar tareas de a pares, las cuales son corregidas por un JTP. Cuando los alumnos llegan, forman una fila. Una vez que están todos en fila, el JTP les asigna un número de grupo a cada uno. Para ello, suponga que existe una función AsignarNroGrupo() que retorna un número “aleatorio” del 1 al 25. Cuando un alumno ha recibido su número de grupo, comienza a realizar su tarea. Al terminarla, el alumno le avisa al JTP y espera por su nota. Cuando los dos alumnos del grupo completaron la tarea, el JTP les asigna un puntaje (el primer grupo en terminar tendrá como nota 25, el segundo 24, y así sucesivamente hasta el último que tendrá nota 1). Nota: el JTP no guarda el número de grupo que le asigna a cada alumno.
+
+- 25 pares de alumnos
+- 1 JTP
+- Los alumnos llegan y forman una fila.
+- Hasta que no estan todos en la fila, no se les asigna un grupo a cada uno.
+- Una vez con número de grupo, el alumno comienza su tarea.
+- Cuando el alumno termina, le avisa al JTP y espera su nota.
+- Cuando un par terminó su tarea, el JTP les asigna un puntaje segun el orden de finalización.
+
+
+```c
+Process alumno::[id : 1..50] {
+	Escritorio.llegue(id)
+	delay(50000) // Realiza la tarea
+	Escritorio.termine(id)
+}
+
+Process JTP {
+	Escritorio.esperarLlegada()
+	Escritorio.asignarGrupos()
+	for (int i = 0; i < 50; i++) {
+		Escritorio.esperarEntrega()
+	}
+}
+
+Monitor Escritorio {
+	cond esperoLlegada, esperamosGrupo, esperoEntrega, esperoJTPLibre, esperoPuntaje[25];
+	int alumnosPresentes = 0, puntajeProximo = 25, cantEsperandoCorreccion = 0;
+	Cola alumnos, colaEsperandoCorreccion;
+	Array grupo[50] = ([50] 0), terminaronPorGrupo[25] = ([25] 0), puntajePorGrupo[25] = ([25] 0);
+	bool corrigiendo = false;
+
+	procedure esperarLlegada() {
+		wait(esperoLlegada)
+	}
+
+	procedure asignarGrupos() {
+		for ( int i = 1; i < 50; i++) {
+			id = alumnos.pop()
+			grupo[id] = AsignarNroGrupo()
+		}
+		signal_all(esperamosGrupo)
+	}
+
+	procedure esperarEntrega() {
+		if (cantEsperandoCorreccion == 0) {
+			wait(esperoEntrega)
+		}
+
+		id = colaEsperandoCorreccion.pop()
+		terminaronPorGrupo[grupo[id]] += 1
+		if (terminaronPorGrupo[grupo[id]] == 2) {
+			puntajePorGrupo[grupo[id]] = puntajeProximo
+			puntajeProximo -= 1
+			signal_all(esperandoPuntaje[grupo[id]])
+		}
+	}
+
+	procedure llegue(int IN id) {
+		alumnosPresentes += 1
+		alumnos.push(id)
+		if (alumnosPresentes == 50) {
+			signal(esperoLlegada)
+		}
+		wait(esperamosGrupo)
+	}
+
+	procedure termineTarea(int IN id) {
+		cantEsperandoCorreccion += 1
+		colaEsperandoCorreccion.push(id)
+		signal(esperoEntrega)
+		wait(esperoPuntaje[grupo[id]])
+	}
+
+}
+```
