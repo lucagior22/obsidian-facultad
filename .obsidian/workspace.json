@@ -13,7 +13,7 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Concurrente/Prácticas/Práctica 3.md",
+                "file": "Concurrente/Prácticas/Práctica Repaso MC.md",
                 "mode": "source",
                 "source": false
               }
@@ -69,8 +69,7 @@
       }
     ],
     "direction": "horizontal",
-    "width": 200,
-    "collapsed": true
+    "width": 200
   },
   "right": {
     "id": "1033dcce961b48ce",
@@ -86,7 +85,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "Concurrente/Prácticas/Práctica 3.md",
+                "file": "Concurrente/Prácticas/Práctica Repaso MC.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -103,7 +102,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "Concurrente/Prácticas/Práctica 3.md",
+                "file": "Concurrente/Prácticas/Práctica Repaso MC.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -126,7 +125,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Concurrente/Prácticas/Práctica 3.md"
+                "file": "Concurrente/Prácticas/Práctica Repaso MC.md"
               }
             }
           },
@@ -158,8 +157,9 @@
   },
   "active": "b42655e6e9f032cf",
   "lastOpenFiles": [
-    "Concurrente/Resoluciones Parciales/Resoluciones Parcial MC.md",
     "Concurrente/Prácticas/Práctica 3.md",
+    "Concurrente/Prácticas/Práctica Repaso MC.md",
+    "Concurrente/Resoluciones Parciales/Resoluciones Parcial MC.md",
     "Concurrente/Prácticas/Prácticas.md",
     "Concurrente/Teorías/Teoría 8 - RPC Y Rendezvouz.md",
     "Concurrente/Prácticas/Práctica 2.md",
@@ -200,7 +200,6 @@
     "Proyecto de Software/Teorías/Teoría - Sesiones.md",
     "Proyecto de Software/Teorías/Teoría - Bases de Datos.md",
     "Proyecto de Software/Teorías",
-    "Proyecto de Software/Sin título.md",
     "Concurrente/Prácticas",
     "Concurrente/Explicaciones Prácticas",
     "Concurrente/Teorías",

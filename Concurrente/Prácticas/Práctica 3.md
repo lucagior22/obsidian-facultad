@@ -481,7 +481,7 @@ Monitor Escritorio {
 		wait(esperamosGrupo)
 	}
 
-	procedure termineTarea(int IN id) {
+	procedure termine(int IN id) {
 		cantEsperandoCorreccion += 1
 		colaEsperandoCorreccion.push(id)
 		signal(esperoEntrega)
