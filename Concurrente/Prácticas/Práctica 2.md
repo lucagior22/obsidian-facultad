@@ -608,9 +608,10 @@ Process empleado::[id : 0..E-1] {
 > 
 > • Los armadores continuamente toman un marco y un vidrio (en ese orden) de los depósitos correspondientes y arman la ventana (cada ventana es armada por un único armador).
 
+*Solución con cola, deberia hacerse con array para maximizar la concurrencia.*
 ```c
 Marco marcos[30]; Vidrio vidrios[50];
-sem mutexMarcos = 1, mutexVidrios = 1, llenoVidrios = 0, llenoMarcos = 0; vacioVidrios = 50, vacioMarcos = 30; 
+sem mutexMarcos = 1, mutexVidrios = 1, llenoVidrios = 0, llenoMarcos = 0, vacioVidrios = 50, vacioMarcos = 30, mutexArmador = 1; 
 
 Process carpintero::[id : 0..3] {
 	while (true) {
@@ -639,15 +640,15 @@ Process armador::[ id : 0..1] {
 	Marco marco;
 	while (true) {
 		P(llenoMarcos)
-		P(mutexMarcos)
+		P(mutexArmador)
 		marco = marcos.pop()
-		V(mutexMarcos)
+		V(mutexArmador)
 		V(vacioMarcos)
 		
 		P(llenoVidrios)
-		P(mutexVidrios)
+		P(mutexArmador)
 		vidrio = vidrios.pop()
-		V(mutexVidrios)
+		V(mutexArmador)
 		V(vacioMarcos)
 
 		// Arma la ventana
