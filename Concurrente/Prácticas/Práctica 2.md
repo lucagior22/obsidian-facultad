@@ -656,7 +656,58 @@ Process armador::[ id : 0..1] {
 
 ```
 
+```python
 
+marco marcos[1..30]
+vidrio vidrios[1..50]
+sem mutexM = 1, mutexV = 1
+ marcos_libre = 30, vidrios_libre = 50, marcos_lleno = 0, vidrios_lleno = 0, mutexARM = 1
+int Mlibre = 0, Mocupado = 0
+Vlibre = 0, Vocupado = 0
+
+Process Carpintero(id: 1..4){
+	while(true)
+		marco = hacerMarco()
+		p(marcos_libre)
+		p(mutexM)
+		marcos[libre] = marco
+		Mlibre = (Mlibre + 1) mod 30
+		v(marcos_lleno)
+		v(mutexM)
+}
+
+Process Vidriero(id: 1..7){
+	while(true)
+		vidrio = hacerVidrio()
+		p(vidrios_libre)
+		p(mutexV)
+		vidrios[libre] = vidrio
+		Vlibre = (Vlibre + 1) mod 30
+		v(vidrios_lleno)
+		v(mutexV)
+}
+
+Process Armador(id: 1..2){
+	Marco marco;
+	Vidrio vidrio;
+	while(true)
+		p(marcos_lleno)
+		p(mutexARM)
+		marco = marcos[Mocupado]
+		Mocupado = (Mocupado +1) mod 30
+		v(marcos_libre)
+		v(mutexARM)
+		
+		p(vidrio_lleno)
+		p(mutexARM)
+		vidrio = mvidrio[Vocupado]
+		Vocupado = (Vocupado +1) mod 30
+		v(vidrio_libre)
+		v(mutexARM)
+	
+		ArmarVentana(marco, vidrio)
+}
+```
 ---
 # Ejercicio 10
 > A una cerealera van T camiones a descargarse trigo y M camiones a descargar maíz. Sólo hay lugar para que 7 camiones a la vez descarguen, pero no pueden ser más de 5 del mismo tipo de cereal. 

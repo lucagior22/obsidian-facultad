@@ -13,7 +13,7 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Concurrente/Prácticas/Práctica Repaso MC.md",
+                "file": "Concurrente/Prácticas/Práctica 2.md",
                 "mode": "source",
                 "source": false
               }
@@ -69,7 +69,8 @@
       }
     ],
     "direction": "horizontal",
-    "width": 200
+    "width": 200,
+    "collapsed": true
   },
   "right": {
     "id": "1033dcce961b48ce",
@@ -85,7 +86,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "Concurrente/Prácticas/Práctica Repaso MC.md",
+                "file": "Concurrente/Prácticas/Práctica 2.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -102,7 +103,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "Concurrente/Prácticas/Práctica Repaso MC.md",
+                "file": "Concurrente/Prácticas/Práctica 2.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -125,7 +126,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Concurrente/Prácticas/Práctica Repaso MC.md"
+                "file": "Concurrente/Prácticas/Práctica 2.md"
               }
             }
           },
@@ -157,9 +158,9 @@
   },
   "active": "b42655e6e9f032cf",
   "lastOpenFiles": [
-    "Concurrente/Resoluciones Parciales/Resoluciones Parcial MC.md",
-    "Concurrente/Prácticas/Práctica Repaso MC.md",
     "Concurrente/Prácticas/Práctica 3.md",
+    "Concurrente/Prácticas/Práctica Repaso MC.md",
+    "Concurrente/Resoluciones Parciales/Resoluciones Parcial MC.md",
     "Concurrente/Prácticas/Prácticas.md",
     "Concurrente/Teorías/Teoría 8 - RPC Y Rendezvouz.md",
     "Concurrente/Explicaciones Prácticas/Explicación práctica - Monitores.md",

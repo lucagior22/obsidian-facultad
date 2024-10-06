@@ -490,3 +490,62 @@ Monitor Escritorio {
 
 }
 ```
+
+---
+# 10
+> En un parque hay un juego para ser usada por N personas de a una a la vez y de acuerdo al orden en que llegan para solicitar su uso. Además, hay un empleado encargado de desinfectar el juego durante 10 minutos antes de que una persona lo use. Cada persona al llegar espera hasta que el empleado le avisa que puede usar el juego, lo usa por un tiempo y luego lo devuelve. Nota: suponga que la persona tiene una función Usar_juego que simula el uso del juego; y el empleado una función Desinfectar_Juego que simula su trabajo. Todos los procesos deben terminar su ejecución.
+
+
+```c
+process persona::[id : 1..N] {
+	Juego.llegue()
+	Usar_juego()
+	JuegoSalida.salir()
+}
+
+process empleado {
+	for (int i = 0; i < N; i++) {
+		Desinfectar_juego()
+		Juego.siguiente()
+		JuegoSalida.seFue()
+	}
+}
+
+Monitor Juego {
+	int cantEsperando = 0;
+	cond colaEspera, empleado;
+
+	procedure llegue() {
+		cantEsperando += 1
+		signal(empleado)
+		wait(colaEspera)
+	}
+
+	
+	procedure siguiente() {
+		if (cantEsperando == 0) {
+			wait(empleado)
+		}
+		cantEsperando--
+		signal(colaEspera)
+	}
+	
+}
+
+Monitor JuegoSalida {
+	cond limpiar
+	Boolean seFue = False
+
+	procedure salir(){
+		seFue = True
+		signal(limpiar)
+	}
+
+	procedure seFue(){
+		if(not seFue) {
+			wait(limpiar)
+		}
+		seFue = False
+	}
+}
+```
