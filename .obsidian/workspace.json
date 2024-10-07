@@ -13,7 +13,7 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Concurrente/Prácticas/Práctica 2.md",
+                "file": "Proyecto de Software/Explicaciones prácticas/Minio.md",
                 "mode": "source",
                 "source": false
               }
@@ -86,7 +86,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "Concurrente/Prácticas/Práctica 2.md",
+                "file": "Proyecto de Software/Explicaciones prácticas/Minio.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -103,7 +103,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "Concurrente/Prácticas/Práctica 2.md",
+                "file": "Proyecto de Software/Explicaciones prácticas/Minio.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -126,7 +126,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Concurrente/Prácticas/Práctica 2.md"
+                "file": "Proyecto de Software/Explicaciones prácticas/Minio.md"
               }
             }
           },
@@ -158,6 +158,12 @@
   },
   "active": "b42655e6e9f032cf",
   "lastOpenFiles": [
+    "Concurrente/Teorías/Teoría 6 - Memoria distribuida.md",
+    "Proyecto de Software/Explicaciones prácticas/Minio.md",
+    "Proyecto de Software/Explicaciones prácticas",
+    "Concurrente/Teorías/Teoría 5 - Monitores.md",
+    "Concurrente/Teorías/Teoría 4 - Semáforos.md",
+    "Concurrente/Prácticas/Práctica 2.md",
     "Concurrente/Prácticas/Práctica 3.md",
     "Concurrente/Prácticas/Práctica Repaso MC.md",
     "Concurrente/Resoluciones Parciales/Resoluciones Parcial MC.md",
@@ -166,14 +172,12 @@
     "Concurrente/Explicaciones Prácticas/Explicación práctica - Monitores.md",
     "Concurrente/Explicaciones Prácticas/Explicaciones Prácticas.md",
     "Concurrente/Prácticas/Práctica 1.md",
-    "Concurrente/Prácticas/Práctica 2.md",
     "Pasted image 20241003115145.png",
     "Pasted image 20241003110440.png",
     "Concurrente/Resoluciones Parciales",
     "Concurrente/Sin título.md",
     "Pasted image 20241003103858.png",
     "Concurrente/Teorías/Teoría 7 - PMA.md",
-    "Concurrente/Teorías/Teoría 6 - Memoria distribuida.md",
     "Concurrente/Teorías/Teorías.md",
     "Sin título 3.canvas",
     "Sin título.md",
@@ -197,16 +201,12 @@
     "Redes/Redes.md",
     "Redes/Teorías",
     "Redes/Prácticas",
-    "Proyecto de Software/Proyecto de Software.md",
-    "Proyecto de Software/Teorías/Teorías.md",
-    "Proyecto de Software/Teorías/Teoría - Sesiones.md",
     "Proyecto de Software/Teorías",
     "Concurrente/Prácticas",
     "Concurrente/Explicaciones Prácticas",
     "Concurrente/Teorías",
     "Pasted image 20240912153636.png",
     "Pasted image 20240912152730.png",
-    "Proyecto de Software",
     "Pasted image 20240909191244.png"
   ]
 }
