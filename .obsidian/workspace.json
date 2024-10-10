@@ -13,7 +13,7 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Proyecto de Software/Explicaciones prácticas/Minio.md",
+                "file": "Concurrente/Prácticas/Práctica 4.md",
                 "mode": "source",
                 "source": false
               }
@@ -86,7 +86,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "Proyecto de Software/Explicaciones prácticas/Minio.md",
+                "file": "Concurrente/Prácticas/Práctica 4.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -103,7 +103,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "Proyecto de Software/Explicaciones prácticas/Minio.md",
+                "file": "Concurrente/Prácticas/Práctica 4.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -126,7 +126,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Proyecto de Software/Explicaciones prácticas/Minio.md"
+                "file": "Concurrente/Prácticas/Práctica 4.md"
               }
             }
           },
@@ -156,10 +156,14 @@
       "command-palette:Abrir paleta de comandos": false
     }
   },
-  "active": "b42655e6e9f032cf",
+  "active": "e2c927fabe1e2dde",
   "lastOpenFiles": [
-    "Concurrente/Teorías/Teoría 6 - Memoria distribuida.md",
+    "Computabilidad/Prácticas/Práctica 4.md",
+    "Concurrente/Prácticas/Práctica 4.md",
     "Proyecto de Software/Explicaciones prácticas/Minio.md",
+    "Computabilidad/Prácticas",
+    "Computabilidad",
+    "Concurrente/Teorías/Teoría 6 - Memoria distribuida.md",
     "Proyecto de Software/Explicaciones prácticas",
     "Concurrente/Teorías/Teoría 5 - Monitores.md",
     "Concurrente/Teorías/Teoría 4 - Semáforos.md",
@@ -197,14 +201,10 @@
     "Redes/Repaso",
     "Pasted image 20240919162656.png",
     "repo",
-    "Redes/Teorías/Teorías.md",
-    "Redes/Redes.md",
     "Redes/Teorías",
     "Redes/Prácticas",
     "Proyecto de Software/Teorías",
     "Concurrente/Prácticas",
-    "Concurrente/Explicaciones Prácticas",
-    "Concurrente/Teorías",
     "Pasted image 20240912153636.png",
     "Pasted image 20240912152730.png",
     "Pasted image 20240909191244.png"
