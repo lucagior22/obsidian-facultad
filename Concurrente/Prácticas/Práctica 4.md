@@ -1,3 +1,4 @@
+# PMA
 # 1
 
 > Suponga que N clientes llegan a la cola de un banco y que serán atendidos por sus empleados. Analice el problema y defina qué procesos, recursos y canales/comunicaciones serán necesarios/convenientes para resolverlo. Luego, resuelva considerando las siguientes situaciones: 
@@ -542,3 +543,321 @@ process impresora [id:1..3]{
 
 > d) Modifique la solución (b) considerando que tanto el director como cada administrativo imprimen 10 trabajos y que todos los procesos deben terminar su ejecución. 
 > e) Si la solución al ítem d) implica realizar Busy Waiting, modifíquela para evitarlo. 
+
+
+# PMS
+
+# 1 
+> Suponga que existe un antivirus distribuido que se compone de R procesos robots Examinadores y 1 proceso Analizador. Los procesos Examinadores están buscando continuamente posibles sitios web infectados; cada vez que encuentran uno avisan la dirección y luego continúan buscando. El proceso Analizador se encarga de hacer todas las pruebas necesarias con cada uno de los sitios encontrados por los robots para determinar si están o no infectados. 
+> 
+> a) Analice el problema y defina qué procesos, recursos y comunicaciones serán necesarios/convenientes para resolverlo. 
+> b) Implemente una solución con PMS sin tener en cuenta el orden de los pedidos. 
+
+*Solución básica, puede ser menos concurrente que la siguiente. No respeta el orden*
+```clike
+process Analizador {
+	Direccion direccion;
+	while (true) {
+		Examinador[*]?direccion(direccion)
+		analizar(direccion)
+	}
+}
+
+process Examinador::[0..R-1] {
+	Direccion direccion;
+	while (true) {
+		direccion = buscarSitio()
+		Analizador!direccion(direccion)
+	}
+}
+```
+
+> c) Modifique el inciso (b) para que el Analizador resuelva los pedidos en el orden en que se hicieron.
+
+*Solución mas concurrente y respetando el orden.*
+```clike
+process Analizador {
+    while true {
+        Admin!pedido()
+        Admin?respuesta(direccion)
+        analizar(direccion)
+    }
+}
+
+process Examinador[id:1..N] {
+    while true {
+        direccion = buscarSitio() //busca un sitio web
+        Admin!resultado(direccion)
+    }
+}
+
+process Admin {
+    Cola direcciones;
+    text direccion;
+    
+    do examinador[*]?resultado(direccion) -> direcciones.push(direccion)
+    [] !empty(direcciones); analizador?Pedido() -> Analizador!Avisos(aviso.pop());
+    od 
+}
+```
+
+# 2
+> En un laboratorio de genética veterinaria hay 3 empleados. 
+> 
+> El primero de ellos continuamente prepara las muestras de ADN; cada vez que termina, se la envía al segundo empleado y vuelve a su trabajo. 
+> 
+> El segundo empleado toma cada muestra de ADN preparada, arma el set de análisis que se deben realizar con ella y espera el resultado para archivarlo. 
+> 
+> Por último, el tercer empleado se encarga de realizar el análisis y devolverle el resultado al segundo empleado.
+
+```clike
+process EmpleadoUno {
+	while (True) {
+		muestra = prepararMuestra()
+		admin!(muestra)
+	}
+}
+
+process EmpleadoDos {
+	while (True) {
+		Admin!esperoMuestra()
+		Admin?reciboMuestra(muestra)
+		set = armarSet(muestra)
+		EmpleadoTres!envioSet(set)
+		EmpleadoTres?reciboResultado(resultado)
+		archivar(resultado)
+	}
+}
+
+process EmpleadoTres {
+	while(true) {
+		EmpleadoDos?envioSet(set)
+		resultado = hacerAnalisis(set)
+		EmpleadoDos!reciboResultado(resultado)
+	}
+}
+
+process Admin {
+	Cola muestras
+	do EmpleadoUno?envioMuestra(muestra) -> muestras.push(muestra);
+	[] !empty(muestras); EmpleadoDos?esperoMuestra -> { 
+		aux = muestras.pop(); 
+		EmpleadoDos!reciboMuestra(aux) 
+		}
+}
+```
+
+# 3
+> En un examen final hay N alumnos y P profesores. Cada alumno resuelve su examen, lo entrega y espera a que alguno de los profesores lo corrija y le indique la nota. Los profesores corrigen los exámenes respetando el orden en que los alumnos van entregando. 
+> a) Considerando que P=1. 
+```clike
+process Alumno::[id: 1..N] {
+	examen = realizarExamen()
+	Profesor!entregaExamen(examen, id)
+	Profesor[*]?entregaCorreccion(correccion)
+}
+
+process Profesor::[id : 1..P] {
+	Boolean fin = False;
+	for (int i = 1; i < N; i++) {
+		if Profesor[id]?entregaExamen(examen, idAlumno) -> {
+			correcion = corregirExamen(examen)
+			Alumno[idAlumno]!entregaCorreccion(correccion)
+			}
+	}
+}
+```
+*Consultas: ¿Se genera demora innecesaria teniendo en cuenta que los alumnos igualmente tienen que esperar la corrección?*
+
+> b) Considerando que P>1. 
+```clike
+process Alumno::[id: 1..N] {
+	examen = realizarExamen()
+	Admin!entregaExamen(examen, id)
+	Profesor[*]?entregaCorreccion(correccion)
+}
+
+process Profesor::[id : 1..P] {
+	Boolean fin = False;
+	while (!fin) {
+		if Admin[id]?entregaExamen(examen, idAlumno) -> {
+			correcion = corregirExamen(examen)
+			Alumno[idAlumno]!entregaCorreccion(correccion)
+			}
+		* Admin[id]?finCorrecciones() -> {
+			fin = True
+			}
+		fi
+	}
+}
+
+process Admin {
+	Cola entregas;
+	Int entregasRestantes = N;
+
+	while (entregasRestantes > 0) {
+		if Alumno?entregaExamen (examen, idAlumno) -> {
+			entregas.push((examen, idAlumno))
+			}
+		* !entregas.empty(); Profesor?profesorLibre(idProfesor) -> {
+				(examen, idAlumno) = entregas.pop()
+				Profesor[idProfesor]!entregaExamen(examen, idAlumno)
+				entregasRestantes--
+			}
+		fi
+	}
+	
+	for (int i = 1; i <= P; i++) {
+		Profesor[i]!finCorrecciones()
+	}
+}
+```
+*Consultas: ¿Se puede enviar un mensaje vacio con fines de sincronización? ¿Sería mejor que el profesor avise al admin que terminó de corregir en vez de suponer que lo hizo cuando se le entregó el examen?*
+
+> c) Ídem b) pero considerando que los alumnos no comienzan a realizar su examen hasta que todos hayan llegado al aula. Nota: maximizar la concurrencia; no generar demora innecesaria; todos los procesos deben terminar su ejecución
+```clike
+process Alumno::[id: 1..N] {
+	Admin!llegadaAlumno()
+	Admin[id]?comienzoExamen()
+	examen = realizarExamen()
+	Admin!entregaExamen(examen, id)
+	Profesor[*]?entregaCorreccion(correccion)
+}
+
+process Profesor::[id : 1..P] {
+	Boolean fin = False;
+	while (!fin) {
+		if Admin[id]?entregaExamen(examen, idAlumno) -> {
+			correcion = corregirExamen(examen)
+			Alumno[idAlumno]!entregaCorreccion(correccion)
+			}
+		* Admin[id]?finCorrecciones() -> {
+			fin = True
+			}
+		fi
+	}
+}
+
+process Admin {
+	Cola entregas;
+	Int entregasRestantes = N;
+	Int alumnosPresentes = 0;
+
+	// Este do podria cambiarse por un for de 1 a N
+	do !(alumnosPresentes == N); Alumno?llegadaAlumno() -> {
+		alumnosPresentes++
+		}
+		
+	for (int k = 1; k < N; k++) {
+		Alumno[id]!comienzoExamen()
+	}
+
+	while (entregasRestantes > 0) {
+		if Alumno?entregaExamen (examen, idAlumno) -> {
+			entregas.push((examen, idAlumno))
+			}
+		* !entregas.empty(); Profesor?profesorLibre(idProfesor) -> {
+				(examen, idAlumno) = entregas.pop()
+				Profesor[idProfesor]!entregaExamen(examen, idAlumno)
+				entregasRestantes--
+			}
+		fi
+	}
+	
+	for (int i = 1; i <= P; i++) {
+		Profesor[i]!finCorrecciones()
+	}
+}
+```
+
+# 4
+> En una exposición aeronáutica hay un simulador de vuelo (que debe ser usado con exclusión mutua) y un empleado encargado de administrar su uso. Hay P personas que esperan a que el empleado lo deje acceder al simulador, lo usa por un rato y se retira. Nota: cada persona usa sólo una vez el simulador.
+> a) Implemente una solución donde el empleado sólo se ocupa de garantizar la exclusión mutua. 
+
+```clike
+process Empleado {
+	int id
+	While (true) {
+		Persona[*]?pedirSimulador(id)
+		Persona[id]!pasar()
+		Persona[id]?dejarSimulador()
+	}
+}
+
+process Persona::[id : 1..P] {
+	Empleado!pedirSimulador(id)
+	Empleado?pasar()
+	delay(500) // Se usa el simulador
+	Empleado!dejarSimulador()
+}
+```
+
+> b) Modifique la solución anterior para que el empleado considere el orden de llegada para dar acceso al simulador. 
+```clike
+process Admin {
+	Cola cola;
+	for (int i = 1; i <= P; i++) {
+		if Persona[*]?pedirSimulador(id) -> {
+			cola.push(id)
+			}
+		!(cola.empty()); Empleado?empleadoLibre() -> {
+			id = cola.pop()
+			Empleado!quienSigue(id)
+			}
+		fi
+	}
+}
+
+
+process Empleado {
+	int id
+	for (int i = 1; i <= P; i++) {
+		Admin!empleadoLibre()
+		Admin?quienSigue(id)
+		Persona[id]!pasar()
+		Persona[id]?dejarSimulador()
+	}
+}
+
+process Persona::[id : 1..P] {
+	Admin!pedirSimulador(id)
+	Empleado?pasar()
+	delay(500) // Se usa el simulador
+	Empleado!dejarSimulador()
+}
+```
+
+# 5
+> En un estadio de fútbol hay una máquina expendedora de gaseosas que debe ser usada por E Espectadores de acuerdo con el orden de llegada. Cuando el espectador accede a la máquina en su turno usa la máquina y luego se retira para dejar al siguiente. Nota: cada Espectador una sólo una vez la máquina.
+
+```clike
+process Admin {
+	Cola cola;
+	Boolean libre = True;
+	for (int i = 1; i <= E; i++) {
+		if !libre; Espectador[*]?pedirMaquina(id) -> {
+			cola.push(id)
+			}
+		if libre; Espectador[*]?pedirMaquina(id) -> {
+			libre = false
+			Espectador[id]!pasar()
+			}
+		if Espectador[*]?dejarMaquina() -> {
+			if cola.empty() { 
+				libre = True
+			} else {
+				id = cola.pop()
+				Espectador[id]!pasar()
+			}	
+			}
+		fi
+	}
+}
+
+process Espectador::[id : 1..E] {
+	Admin!pedirMaquina(id)
+	Admin?pasar()
+	// Se utiliza la máquina expendedora
+	Admin!dejarMaquina()
+}
+```

@@ -8,20 +8,6 @@
         "type": "tabs",
         "children": [
           {
-            "id": "b42655e6e9f032cf",
-            "type": "leaf",
-            "state": {
-              "type": "markdown",
-              "state": {
-                "file": "Concurrente/Explicaciones Prácticas/Explicación Práctica ADA.md",
-                "mode": "source",
-                "source": false
-              },
-              "icon": "lucide-file",
-              "title": "Explicación Práctica ADA"
-            }
-          },
-          {
             "id": "1754c9cf1645d56f",
             "type": "leaf",
             "state": {
@@ -35,8 +21,7 @@
               "title": "Práctica 4"
             }
           }
-        ],
-        "currentTab": 1
+        ]
       }
     ],
     "direction": "vertical"
@@ -92,7 +77,8 @@
       }
     ],
     "direction": "horizontal",
-    "width": 200
+    "width": 200,
+    "collapsed": true
   },
   "right": {
     "id": "1033dcce961b48ce",
@@ -190,9 +176,11 @@
   },
   "active": "1754c9cf1645d56f",
   "lastOpenFiles": [
-    "Concurrente/Prácticas/Práctica 3.md",
-    "Proyecto de Software/Teorías/Teoría OAUTH.md",
+    "Concurrente/Explicaciones Prácticas/Explicación práctica - PMS.md",
+    "Proyecto de Software/Teorías/Teoría - Frameworks y VUE.js.md",
+    "Proyecto de Software/Teorías/Teoría - OAUTH.md",
     "Concurrente/Prácticas/Práctica 4.md",
+    "Concurrente/Prácticas/Práctica 3.md",
     "Concurrente/Explicaciones Prácticas/Explicaciones Prácticas.md",
     "Concurrente/Teorías/Teoría 8 - RPC Y Rendezvouz.md",
     "Concurrente/Explicaciones Prácticas/Explicación Práctica ADA.md",
@@ -225,9 +213,7 @@
     "Concurrente/practica_dos.md",
     "Redes/Prácticas/Práctica 3.md",
     "Redes/Repaso/Repaso - Capa de Aplicación.md",
-    "Redes/Teorías/Teoría 10-9 DNS, FTP y Mail.md",
     "Pasted image 20240930090442.png",
-    "Redes/Prácticas/Prácticas.md",
     "Pasted image 20240926105348.png",
     "Pasted image 20240925120642.png",
     "Redes/Repaso",
