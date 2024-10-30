@@ -105,24 +105,24 @@ PROCEDURE Puente IS
 			SELECT
 				-- Entrada auto
 				WHEN (pesoActual + 1 <= 5 and EntradaCamion'Count = 0) =>
-					ACCEPT EntradaAuto do
+					ACCEPT EntradaAuto DO
 						pesoActual := pesoActual + 1;
 					END EntradaAuto;
 			OR
 				-- Entrada camioneta
 				WHEN (pesoActual + 2 <= 5 and EntradaCamion'Count = 0) =>
-					ACCEPT EntradaCamioneta do
+					ACCEPT EntradaCamioneta DO
 						pesoActual := pesoActual + 2;
 					END EntradaCamioneta;
 			OR
 				-- Entrada camion
 				WHEN (pesoActual + 3 <= 5) =>
-					ACCEPT EntradaCamion do
+					ACCEPT EntradaCamion DO
 						pesoActual := pesoActual + 3;
 					END EntradaCamion;
 			OR
 				-- Salida de cualquier vehiculo
-				ACCEPT Salida (Peso: IN Integer) do
+				ACCEPT Salida (Peso: IN Integer) DO
 					pesoActual := pesoActual - Peso;
 				END Salida
 			END SELECT
@@ -170,4 +170,156 @@ PROCEDURE Puente IS
 BEGIN
 -- Progr. Principal
 END Puente
+```
+
+--- 
+# 2
+> Se quiere modelar el funcionamiento de un banco, al cual llegan clientes que deben realizar un pago y retirar un comprobante. Existe un único empleado en el banco, el cual atiende de acuerdo con el orden de llegada. 
+> a) Implemente una solución donde los clientes llegan y se retiran sólo después de haber sido atendidos. 
+```ADA
+PROCEDURE Banco IS
+	TASK Empleado IS
+		ENTRY RealizarPago (pago: IN Pago, comprobante: OUT Comprobante)
+	END Empleado
+
+	TASK BODY Empleado is
+		comprobante : Comprobante;
+	BEGIN
+		LOOP
+			SELECT 
+				ACCEPT RealizarPago (pago: IN Pago, comprobante: OUT Comprobante) DO
+					comprobante := ProcesarPago(Monto)
+				END RealizarPago 
+			END SELECT
+		END LOOP
+	END Empleado
+
+	TASK TYPE Cliente;
+
+	TASK BODY Cliente IS
+		pago : Pago;
+		comprobante : Comprobante;
+	BEGIN
+		Empleado.RealizarPago(pago, comprobante)
+	END Cliente
+
+	Clientes := array (1..n) of Cliente;
+BEGIN
+END Banco
+```
+
+> b) Implemente una solución donde los clientes se retiran si esperan más de 10 minutos para realizar el pago. 
+```ADA
+PROCEDURE Banco IS
+	TASK Empleado IS
+		ENTRY RealizarPago (pago: IN Pago, comprobante: OUT Comprobante)
+	END Empleado
+
+	TASK BODY Empleado is
+		comprobante : Comprobante;
+	BEGIN
+		LOOP
+			SELECT 
+				ACCEPT RealizarPago (pago: IN Pago, comprobante: OUT Comprobante) DO
+					comprobante := ProcesarPago(Monto)
+				END RealizarPago 
+			END SELECT
+		END LOOP
+	END Empleado
+
+	TASK TYPE Cliente;
+
+	TASK BODY Cliente IS
+		pago : Pago;
+		comprobante : Comprobante;
+	BEGIN
+		SELECT
+			Empleado.RealizarPago(pago, comprobante)
+		OR DELAY 600000 -- Se esperan 600000ms o 10min
+			null
+		END SELECT
+	END Cliente
+
+	Clientes := array (1..n) of Cliente;
+BEGIN
+END Banco
+```
+
+> c) Implemente una solución donde los clientes se retiran si no son atendidos inmediatamente.  
+```ADA
+PROCEDURE Banco IS
+	TASK Empleado IS
+		ENTRY RealizarPago (pago: IN Pago, comprobante: OUT Comprobante)
+	END Empleado
+
+	TASK BODY Empleado is
+		comprobante : Comprobante;
+	BEGIN
+		LOOP
+			SELECT 
+				ACCEPT RealizarPago (pago: IN Pago, comprobante: OUT Comprobante) DO
+					comprobante := ProcesarPago(Monto)
+				END RealizarPago 
+			END SELECT
+		END LOOP
+	END Empleado
+
+	TASK TYPE Cliente;
+
+	TASK BODY Cliente IS
+		pago : Pago;
+		comprobante : Comprobante;
+	BEGIN
+		SELECT
+			Empleado.RealizarPago(pago, comprobante)
+		ELSE -- Se retira inmediatemente
+			null
+		END SELECT
+	END Cliente
+
+	Clientes := array (1..n) of Cliente;
+BEGIN
+END Banco
+```
+
+> d) Implemente una solución donde los clientes esperan a lo sumo 10 minutos para ser atendidos. Si pasado ese lapso no fueron atendidos, entonces solicitan atención una vez más y se retiran si no son atendidos inmediatamente.
+
+```ADA
+PROCEDURE Banco IS
+	TASK Empleado IS
+		ENTRY RealizarPago (pago: IN Pago, comprobante: OUT Comprobante)
+	END Empleado
+
+	TASK BODY Empleado is
+		comprobante : Comprobante;
+	BEGIN
+		LOOP
+			SELECT 
+				ACCEPT RealizarPago (pago: IN Pago, comprobante: OUT Comprobante) DO
+					comprobante := ProcesarPago(Monto)
+				END RealizarPago 
+			END SELECT
+		END LOOP
+	END Empleado
+
+	TASK TYPE Cliente;
+
+	TASK BODY Cliente IS
+		pago : Pago;
+		comprobante : Comprobante;
+	BEGIN
+		SELECT
+			Empleado.RealizarPago(pago, comprobante)
+		OR DELAY 600000 -- Se esperan 600000ms o 10min
+			SELECT
+				Empleado.RealizarPago(pago, comprobante)
+			ELSE -- Se retira inmediatemente
+				null
+			END SELECT
+		END SELECT
+	END Cliente
+
+	Clientes := array (1..n) of Cliente;
+BEGIN
+END Banco
 ```
