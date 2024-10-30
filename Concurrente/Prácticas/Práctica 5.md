@@ -525,7 +525,12 @@ BEGIN
 END Clinica
 ```
 
-*Consulta: ¿Que diferencia hay entre los siguientes SELECT?*
+Consultas MIAS: 
+	- ¿Que diferencia hay entre los siguientes SELECT?
+		- Analisis con amigos:
+			- El primer *SELECT* **SIEMPRE** va a responder a un *ENTRY CALL* o en todo caso se queda dormido indefinidamente en el *SELECT*.
+			- El segundo *SELECT* puede no responder a un *ENTRY CALL* dado el caso de que se ejecuten los dos *ELSE*. Entendemos que esto puede derivar en *BUSY WAITING* ya que la tarea loopearia en un un select del que sale sin responder un *ENTRY CALL*.
+ 
 ```ada
 -- Primer SELECT
 SELECT
@@ -566,9 +571,6 @@ ELSE
 	END SELECT
 END SELECT
 ```
-
-
-
 
 ---
 # 4b (Segundo enunciado)
