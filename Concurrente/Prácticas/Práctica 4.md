@@ -554,7 +554,7 @@ process impresora [id:1..3]{
 > b) Implemente una solución con PMS sin tener en cuenta el orden de los pedidos. 
 
 *Solución básica, puede ser menos concurrente que la siguiente. No respeta el orden*
-```clike
+```c
 process Analizador {
 	Direccion direccion;
 	while (true) {
@@ -575,7 +575,7 @@ process Examinador::[0..R-1] {
 > c) Modifique el inciso (b) para que el Analizador resuelva los pedidos en el orden en que se hicieron.
 
 *Solución mas concurrente y respetando el orden.*
-```clike
+```c
 process Analizador {
     while true {
         Admin!pedido()
@@ -610,7 +610,7 @@ process Admin {
 > 
 > Por último, el tercer empleado se encarga de realizar el análisis y devolverle el resultado al segundo empleado.
 
-```clike
+```c
 process EmpleadoUno {
 	while (True) {
 		muestra = prepararMuestra()
@@ -650,7 +650,7 @@ process Admin {
 # 3
 > En un examen final hay N alumnos y P profesores. Cada alumno resuelve su examen, lo entrega y espera a que alguno de los profesores lo corrija y le indique la nota. Los profesores corrigen los exámenes respetando el orden en que los alumnos van entregando. 
 > a) Considerando que P=1. 
-```clike
+```c
 process Alumno::[id: 1..N] {
 	examen = realizarExamen()
 	Profesor!entregaExamen(examen, id)
@@ -670,7 +670,7 @@ process Profesor::[id : 1..P] {
 *Consultas: ¿Se genera demora innecesaria teniendo en cuenta que los alumnos igualmente tienen que esperar la corrección?*
 
 > b) Considerando que P>1. 
-```clike
+```c
 process Alumno::[id: 1..N] {
 	examen = realizarExamen()
 	Admin!entregaExamen(examen, id)
@@ -715,7 +715,7 @@ process Admin {
 *Consultas: ¿Se puede enviar un mensaje vacio con fines de sincronización? ¿Sería mejor que el profesor avise al admin que terminó de corregir en vez de suponer que lo hizo cuando se le entregó el examen?*
 
 > c) Ídem b) pero considerando que los alumnos no comienzan a realizar su examen hasta que todos hayan llegado al aula. Nota: maximizar la concurrencia; no generar demora innecesaria; todos los procesos deben terminar su ejecución
-```clike
+```c
 process Alumno::[id: 1..N] {
 	Admin!llegadaAlumno()
 	Admin[id]?comienzoExamen()
@@ -774,7 +774,7 @@ process Admin {
 > En una exposición aeronáutica hay un simulador de vuelo (que debe ser usado con exclusión mutua) y un empleado encargado de administrar su uso. Hay P personas que esperan a que el empleado lo deje acceder al simulador, lo usa por un rato y se retira. Nota: cada persona usa sólo una vez el simulador.
 > a) Implemente una solución donde el empleado sólo se ocupa de garantizar la exclusión mutua. 
 
-```clike
+```c
 process Empleado {
 	int id
 	While (true) {
@@ -793,7 +793,7 @@ process Persona::[id : 1..P] {
 ```
 
 > b) Modifique la solución anterior para que el empleado considere el orden de llegada para dar acceso al simulador. 
-```clike
+```c
 process Admin {
 	Cola cola;
 	for (int i = 1; i <= P; i++) {
