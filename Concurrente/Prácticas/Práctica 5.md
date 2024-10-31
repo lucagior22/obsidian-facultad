@@ -575,3 +575,206 @@ END SELECT
 ---
 # 4b (Segundo enunciado)
 > En un sistema para acreditar carreras universitarias, hay UN Servidor que atiende pedidos de U Usuarios de a uno a la vez y de acuerdo con el orden en que se hacen los pedidos. Cada usuario trabaja en el documento a presentar, y luego lo envía al servidor; espera la respuesta de este que le indica si está todo bien o hay algún error. Mientras haya algún error, vuelve a trabajar con el documento y a enviarlo al servidor. Cuando el servidor le responde que está todo bien, el usuario se retira. Cuando un usuario envía un pedido espera a lo sumo 2 minutos a que sea recibido por el servidor, pasado ese tiempo espera un minuto y vuelve a intentarlo (usando el mismo documento).
+
+```ada
+PROCEDURE Sistema IS
+	TASK Servidor IS
+		ENTRY EntregaDocumento (documento : IN OUT Text, resultado : OUT Text) -- Parámetro documento INOUT simulando la entrega y corrección, y parámetro error 
+	END Servidor
+	
+	TASK BODY Servidor IS
+		LOOP
+			ACCEPT EntregaDocumento (documento : IN OUT Text, resultado : OUT Text) DO
+				resultado := corregirDocumento(documento)
+			END EntregaDocumento
+		END LOOP
+	END Servidor
+	
+	TASK TYPE Usuario;
+	
+	TASK BODY Usuario IS
+		documento, resultado : Text;
+	BEGIN
+		documento := trabajarDocumento()
+		WHILE (resultado != "Todo bien") LOOP
+			SELECT
+				Servidor.EntregarDocumento(documento, resultado)
+			OR DELAY 120000
+				Delay(60000)
+			END SELECT
+		END LOOP
+	END Usuario
+	
+	Usuarios := array (1..U) of Usuario;
+BEGIN
+END Sistema
+```
+
+---
+# 5
+> En una playa hay 5 equipos de 4 personas cada uno (en total son 20 personas donde cada una conoce previamente a que equipo pertenece). Cuando las personas van llegando esperan con los de su equipo hasta que el mismo esté completo (hayan llegado los 4 integrantes), a partir de ese momento el equipo comienza a jugar. 
+> El juego consiste en que cada integrante del grupo junta 15 monedas de a una en una playa (las monedas pueden ser de 1, 2 o 5 pesos) y se suman los montos de las 60 monedas conseguidas en el grupo. 
+> Al finalizar cada persona debe conocer el grupo que más dinero junto. 
+> Nota: maximizar la concurrencia. Suponga que para simular la búsqueda de una moneda por parte de una persona existe una función Moneda() que retorna el valor de la moneda encontrada.
+
+```ada
+PROCEDURE Playa IS
+	TASK TYPE Persona IS
+		ENTRY ObtenerIdentificadores (idPersona : IN Integer, idGrupo : IN Integer);
+		ENTRY Comenzar;
+	END Persona
+	
+	TASK BODY Persona IS
+		idGrupo, id, moneda, acumuladoMonedas, grupoGanador : Integer;
+	BEGIN
+		-- Se asignan los identificadores
+		ACCEPT ObtenerIdentificadores (idPersona : IN Integer, idGrupo : IN Integer) IS
+			id := idPersona;
+			idGrupo := idGrupo
+		END ObtenerIdentificadores
+		
+		-- Barrera hasta que lleguen todos los del grupo
+		Grupos(idGrupo).LlegadaPersona(id)
+		ACCEPT Comenzar;
+		
+		-- Juego
+		acumuladoMonedas := 0;
+		FOR i IN 1..15 LOOP
+			moneda := Moneda()
+			acumuladoMonedas := acumuladoMonedas + moneda;
+		END LOOP
+		
+		-- Recuento y resultado final
+		Grupos(idGrupo).AgregarAcumulado(acumuladoMonedas)
+		ACCEPT ObtenerResultadoFinal(grupoGanador : IN Integer) DO
+			grupoGanador := grupoGanador
+		END ObtenerResultadoFinal
+		
+	END Persona
+	
+	TASK Grupo IS
+		ENTRY LlegadaPersona (idPersona : IN Integer)
+		ENTRY AgregarAcumulado (acumulado : IN Integer)
+		ENTRY ObtenerIdentificador (id : IN Integer)
+	END Grupo
+	
+	TASK BODY Grupo IS
+		idGrupo, acumuladoTotal, personasPresentes : Integer;
+		integrantes : array (1..5) of Integer;
+	BEGIN
+		-- Obtención del identificador
+		ACCEPT ObtenerIdentificador (id : IN Integer) DO
+			idGrupo := id
+		END ObtenerIdentificador
+		
+		-- Barrera
+		personasPresentes := 0
+		FOR i IN 1..5 LOOP
+			ACCEPT LlegadaPersona (idPersona : IN Integer) DO
+				personasPresentes := personasPresentes + 1
+				integrantes(i) := idPersona
+			END LlegadaPersona
+		END LOOP
+		FOR i IN 1..5 LOOP
+			Personas(integrantes(i)).comenzar
+		END LOOP
+		
+		-- Suma de acumulados
+		acumuladoTotal := 0;
+		FOR i IN 1..5 LOOP
+			ACCEPT AgregarAcumulado (acumulado : IN Integer) DO
+				acumuladoTotal := acumuladoTotal + acumulado;
+			END AgregarAcumulado
+		END LOOP
+		
+		-- Entrega de resultados
+		Coordinador.EntregarAcumuladoGrupo(idGrupo)
+	END Grupo
+	
+	TASK Coordinador IS
+		ENTRY EntregarAcumuladoGrupo (idGrupo : IN Integer, acumulado : IN Integer)
+	END Coordinador
+
+	TASK BODY Coordinador IS
+		maximoAcumulado, grupoGanador : Integer;
+	BEGIN
+		FOR i IN 1..4 LOOP
+			ACCEPT EntregarAcumuladoGrupo (idGrupo : IN Integer, acumulado : IN Integer)
+				IF maximoAcumulado < acumulado THEN 
+					acumulado := maximoAcumulado;
+					grupoGanador := idGrupo;
+				 END IF
+			END EntregarAcumuladoGrupo
+		END LOOP
+		
+		FOR i IN 1..20 LOOP
+			Personas(i).ObtenerResultadoFinal(grupoGanador)
+		END LOOP	
+	END Coordinador
+
+	Personas := array (1..20) of Persona;
+	Grupos := array (1..4) of Grupo;
+
+	i, idGrupo : Integer;
+BEGIN
+	FOR i IN 1..20 LOOP
+		idGrupo := (i MOD 5) + 1
+		Personas(i).ObtenerIdentificadores(i, idGrupo)
+	END LOOP
+	
+	FOR i IN 1..4 LOOP
+		Grupos.ObtenerIdentificador(i)
+	END LOOP
+END Playa
+```
+
+---
+# 6
+> Se debe calcular el valor promedio de un vector de 1 millón de números enteros que se encuentra distribuido entre 10 procesos Worker (es decir, cada Worker tiene un vector de 100 mil números). 
+> Para ello, existe un Coordinador que determina el momento en que se debe realizar el cálculo de este promedio y que, además, se queda con el resultado. 
+> **Nota**: maximizar la concurrencia; este cálculo se hace una sola vez.
+```ada
+PROCEDURE Promedio IS
+	TASK TYPE Worker IS
+		ENTRY Comenzar;
+	END Worker
+	
+	TASK BODY Worker IS
+		numeros : array (1..100000) of Integer;
+		acumulado, promedio : Integer;
+	BEGIN
+		ACCEPT Comenzar;
+		acumulado := 0;
+		FOR i IN 1..100000 LOOP
+			acumulado := acumulado + numeros(i)
+		END LOOP
+		promedio := acumulado / 100000
+		Coordinador.EnviarPromedio(promedio)
+	END Worker
+	
+	TASK Coordinador IS
+		ENTRY EnviarPromedio (promedio : IN Integer)
+	END Coordinador
+	
+	TASK BODY Coordinador IS
+		acumuladoTotal, promedioTotal : Integer;
+	BEGIN
+		FOR i IN 1..10 LOOP
+			Workers(i).Comenzar
+		END LOOP
+		
+		acumuladoTotal := 0;
+		FOR i IN 1..10 LOOP
+			ACCEPT EnviarPromedio (promedio : IN Integer) DO
+				acumuladoTotal := acumuladoTotal + promedio
+			END EnviarPromedio
+		END LOOP
+		
+		promedioTotal := acumuladoTotal / 10
+	END Coordinador
+	
+	Workers := array (1..10) of Worker;
+BEGIN
+END Promedio
+```
+*Consulta: ¿Cómo determina el Coordinador el comienzo de los Workers?*
