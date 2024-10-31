@@ -660,7 +660,7 @@ process Alumno::[id: 1..N] {
 process Profesor::[id : 1..P] {
 	Boolean fin = False;
 	for (int i = 1; i < N; i++) {
-		if Profesor[id]?entregaExamen(examen, idAlumno) -> {
+		if Alumno[*]?entregaExamen(examen, idAlumno) -> {
 			correcion = corregirExamen(examen)
 			Alumno[idAlumno]!entregaCorreccion(correccion)
 			}
@@ -680,11 +680,11 @@ process Alumno::[id: 1..N] {
 process Profesor::[id : 1..P] {
 	Boolean fin = False;
 	while (!fin) {
-		if Admin[id]?entregaExamen(examen, idAlumno) -> {
+		if Admin?entregaExamen(examen, idAlumno) -> {
 			correcion = corregirExamen(examen)
 			Alumno[idAlumno]!entregaCorreccion(correccion)
 			}
-		* Admin[id]?finCorrecciones() -> {
+		* Admin?finCorrecciones() -> {
 			fin = True
 			}
 		fi
@@ -696,10 +696,10 @@ process Admin {
 	Int entregasRestantes = N;
 
 	while (entregasRestantes > 0) {
-		if Alumno?entregaExamen (examen, idAlumno) -> {
+		if Alumno[*]?entregaExamen (examen, idAlumno) -> {
 			entregas.push((examen, idAlumno))
 			}
-		* !entregas.empty(); Profesor?profesorLibre(idProfesor) -> {
+		* !entregas.empty(); Profesor[*]?profesorLibre(idProfesor) -> {
 				(examen, idAlumno) = entregas.pop()
 				Profesor[idProfesor]!entregaExamen(examen, idAlumno)
 				entregasRestantes--
@@ -718,7 +718,7 @@ process Admin {
 ```c
 process Alumno::[id: 1..N] {
 	Admin!llegadaAlumno()
-	Admin[id]?comienzoExamen()
+	Admin?comienzoExamen()
 	examen = realizarExamen()
 	Admin!entregaExamen(examen, id)
 	Profesor[*]?entregaCorreccion(correccion)
@@ -727,11 +727,11 @@ process Alumno::[id: 1..N] {
 process Profesor::[id : 1..P] {
 	Boolean fin = False;
 	while (!fin) {
-		if Admin[id]?entregaExamen(examen, idAlumno) -> {
+		if Admin?entregaExamen(examen, idAlumno) -> {
 			correcion = corregirExamen(examen)
 			Alumno[idAlumno]!entregaCorreccion(correccion)
 			}
-		* Admin[id]?finCorrecciones() -> {
+		* Admin?finCorrecciones() -> {
 			fin = True
 			}
 		fi
@@ -744,19 +744,19 @@ process Admin {
 	Int alumnosPresentes = 0;
 
 	// Este do podria cambiarse por un for de 1 a N
-	do !(alumnosPresentes == N); Alumno?llegadaAlumno() -> {
+	do !(alumnosPresentes == N); Alumno{*]?llegadaAlumno() -> {
 		alumnosPresentes++
 		}
 		
 	for (int k = 1; k < N; k++) {
-		Alumno[id]!comienzoExamen()
+		Alumno[k]!comienzoExamen()
 	}
 
 	while (entregasRestantes > 0) {
-		if Alumno?entregaExamen (examen, idAlumno) -> {
+		if Alumno{*]?entregaExamen (examen, idAlumno) -> {
 			entregas.push((examen, idAlumno))
 			}
-		* !entregas.empty(); Profesor?profesorLibre(idProfesor) -> {
+		* !entregas.empty(); Profesor{*]?profesorLibre(idProfesor) -> {
 				(examen, idAlumno) = entregas.pop()
 				Profesor[idProfesor]!entregaExamen(examen, idAlumno)
 				entregasRestantes--
