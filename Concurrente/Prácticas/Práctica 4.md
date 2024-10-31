@@ -585,6 +585,7 @@ process Analizador {
 }
 
 process Examinador[id:1..N] {
+	Direccion direccion;
     while true {
         direccion = buscarSitio() //busca un sitio web
         Admin!resultado(direccion)
@@ -593,10 +594,10 @@ process Examinador[id:1..N] {
 
 process Admin {
     Cola direcciones;
-    text direccion;
+    Direccion direccion;
     
-    do examinador[*]?resultado(direccion) -> direcciones.push(direccion)
-    [] !empty(direcciones); analizador?Pedido() -> Analizador!Avisos(aviso.pop());
+    do Examinador[*]?resultado(direccion) -> direcciones.push(direccion)
+    [] !empty(direcciones); Analizador?pedido() -> Analizador!respuesta(direcciones.pop())
     od 
 }
 ```
@@ -614,7 +615,7 @@ process Admin {
 process EmpleadoUno {
 	while (True) {
 		muestra = prepararMuestra()
-		admin!(muestra)
+		Admin!envioMuestra()
 	}
 }
 
@@ -640,7 +641,7 @@ process EmpleadoTres {
 process Admin {
 	Cola muestras
 	do EmpleadoUno?envioMuestra(muestra) -> muestras.push(muestra);
-	[] !empty(muestras); EmpleadoDos?esperoMuestra -> { 
+	[] !empty(muestras); EmpleadoDos?esperoMuestra() -> { 
 		aux = muestras.pop(); 
 		EmpleadoDos!reciboMuestra(aux) 
 		}
@@ -654,16 +655,17 @@ process Admin {
 process Alumno::[id: 1..N] {
 	examen = realizarExamen()
 	Profesor!entregaExamen(examen, id)
-	Profesor[*]?entregaCorreccion(correccion)
+	Profesor?entregaCorreccion(correccion)
 }
 
-process Profesor::[id : 1..P] {
+process Profesor {
 	Boolean fin = False;
 	for (int i = 1; i < N; i++) {
 		if Alumno[*]?entregaExamen(examen, idAlumno) -> {
 			correcion = corregirExamen(examen)
 			Alumno[idAlumno]!entregaCorreccion(correccion)
 			}
+		fi
 	}
 }
 ```
@@ -682,12 +684,10 @@ process Profesor::[id : 1..P] {
 	while (!fin) {
 		Admin!profesorLibre(id)
 		if Admin?entregaExamen(examen, idAlumno) -> {
-			correcion = corregirExamen(examen)
+			correccion = corregirExamen(examen)
 			Alumno[idAlumno]!entregaCorreccion(correccion)
 			}
-		* Admin?finCorrecciones() -> {
-			fin = True
-			}
+		* Admin?finCorrecciones() -> fin = True
 		fi
 	}
 }
@@ -697,7 +697,7 @@ process Admin {
 	Int entregasRestantes = N;
 
 	while (entregasRestantes > 0) {
-		if Alumno[*]?entregaExamen (examen, idAlumno) -> {
+		if Alumno[*]?entregaExamen(examen, idAlumno) -> {
 			entregas.push((examen, idAlumno))
 			}
 		* !entregas.empty(); Profesor[*]?profesorLibre(idProfesor) -> {
@@ -730,12 +730,10 @@ process Profesor::[id : 1..P] {
 	while (!fin) {
 		Admin!profesorLibre(id)
 		if Admin?entregaExamen(examen, idAlumno) -> {
-			correcion = corregirExamen(examen)
+			correccion = corregirExamen(examen)
 			Alumno[idAlumno]!entregaCorreccion(correccion)
 			}
-		* Admin?finCorrecciones() -> {
-			fin = True
-			}
+		* Admin?finCorrecciones() -> fin = True
 		fi
 	}
 }
@@ -749,6 +747,7 @@ process Admin {
 	do !(alumnosPresentes == N); Alumno{*]?llegadaAlumno() -> {
 		alumnosPresentes++
 		}
+	od
 		
 	for (int k = 1; k < N; k++) {
 		Alumno[k]!comienzoExamen()
@@ -840,11 +839,11 @@ process Admin {
 		if !libre; Espectador[*]?pedirMaquina(id) -> {
 			cola.push(id)
 			}
-		if libre; Espectador[*]?pedirMaquina(id) -> {
+		* libre; Espectador[*]?pedirMaquina(id) -> {
 			libre = false
 			Espectador[id]!pasar()
 			}
-		if Espectador[*]?dejarMaquina() -> {
+		* Espectador[*]?dejarMaquina() -> {
 			if cola.empty() { 
 				libre = True
 			} else {
