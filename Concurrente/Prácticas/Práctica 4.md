@@ -680,6 +680,7 @@ process Alumno::[id: 1..N] {
 process Profesor::[id : 1..P] {
 	Boolean fin = False;
 	while (!fin) {
+		Admin!profesorLibre(id)
 		if Admin?entregaExamen(examen, idAlumno) -> {
 			correcion = corregirExamen(examen)
 			Alumno[idAlumno]!entregaCorreccion(correccion)
@@ -727,6 +728,7 @@ process Alumno::[id: 1..N] {
 process Profesor::[id : 1..P] {
 	Boolean fin = False;
 	while (!fin) {
+		Admin!profesorLibre(id)
 		if Admin?entregaExamen(examen, idAlumno) -> {
 			correcion = corregirExamen(examen)
 			Alumno[idAlumno]!entregaCorreccion(correccion)
