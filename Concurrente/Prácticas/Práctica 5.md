@@ -50,7 +50,7 @@ PROCEDURE Puente IS
 	TASK BODY Auto IS
 		Administrador.EntradaAuto;
 		Cruzar()
-		Delay(60000) -- Simulo la demora del paso
+		Delay(60.0) -- Simulo la demora del paso
 		Administrador.Salida(1)
 	END Auto
 
@@ -61,7 +61,7 @@ PROCEDURE Puente IS
 	TASK BODY Camioneta IS
 		Administrador.EntradaCamioneta;
 		Cruzar()
-		Delay(60000) -- Simulo la demora del paso
+		Delay(60.0) -- Simulo la demora del paso
 		Administrador.Salida(2)
 	END Camioneta
 	
@@ -72,7 +72,7 @@ PROCEDURE Puente IS
 	TASK BODY Camion IS
 		Administrador.EntradaCamion;
 		Cruzar()
-		Delay(60000) -- Simulo la demora del paso
+		Delay(60.0) -- Simulo la demora del paso
 		Administrador.Salida(3)
 	END Camion
 
@@ -136,7 +136,7 @@ PROCEDURE Puente IS
 	TASK BODY Auto IS
 		Administrador.EntradaAuto;
 		Cruzar()
-		Delay(60000) -- Simulo la demora del paso
+		Delay(60.0) -- Simulo la demora del paso
 		Administrador.Salida(1)
 	END Auto
 
@@ -147,7 +147,7 @@ PROCEDURE Puente IS
 	TASK BODY Camioneta IS
 		Administrador.EntradaCamioneta;
 		Cruzar()
-		Delay(60000) -- Simulo la demora del paso
+		Delay(60.0) -- Simulo la demora del paso
 		Administrador.Salida(2)
 	END Camioneta
 	
@@ -158,7 +158,7 @@ PROCEDURE Puente IS
 	TASK BODY Camion IS
 		Administrador.EntradaCamion;
 		Cruzar()
-		Delay(60000) -- Simulo la demora del paso
+		Delay(60.0) -- Simulo la demora del paso
 		Administrador.Salida(3)
 	END Camion
 
@@ -235,7 +235,7 @@ PROCEDURE Banco IS
 	BEGIN
 		SELECT
 			Empleado.RealizarPago(pago, comprobante)
-		OR DELAY 600000 -- Se esperan 600000ms o 10min
+		OR DELAY 600.0 
 			null
 		END SELECT
 	END Cliente
@@ -310,7 +310,7 @@ PROCEDURE Banco IS
 	BEGIN
 		SELECT
 			Empleado.RealizarPago(pago, comprobante)
-		OR DELAY 600000 -- Se esperan 600000ms o 10min
+		OR DELAY 600.0 
 			SELECT
 				Empleado.RealizarPago(pago, comprobante)
 			ELSE -- Se retira inmediatemente
@@ -332,16 +332,16 @@ END Banco
 ```ada
 PROCEDURE Sistema IS
 	TASK Timer IS
-		ENTRY Comienzo (milisegundos : IN Integer)
+		ENTRY Comienzo (segundos : IN Integer)
 	END Timer
 	
 	TASK BODY Timer IS
 	BEGIN
 		LOOP
-			ACCEPT Comienzo (milisegundos : IN Integer) DO
+			ACCEPT Comienzo (segundos : IN Integer) DO
 				null
 			END Comienzo
-			Delay(milisegundos)
+			Delay(segundos)
 			Central.fin
 		END LOOP
 	END Timer
@@ -366,7 +366,7 @@ PROCEDURE Sistema IS
 				ACCEPT SeñalDos DO
 					null
 				END SeñalDos
-				Timer.Comienzo(180000)
+				Timer.Comienzo(180.0)
 				seguir := True;
 				WHILE (seguir) LOOP
 					SELECT
@@ -390,7 +390,7 @@ PROCEDURE Sistema IS
 		LOOP
 			SELECT
 				Central.SeñalUno
-			OR DELAY (120000)
+			OR DELAY 120.0
 				null
 			END SELECT
 		END LOOP
@@ -404,7 +404,7 @@ PROCEDURE Sistema IS
 			SELECT
 				Central.SeñalDos 
 			ELSE
-				Delay (60000)
+				Delay (60.0)
 				Central.SeñalDos
 			END SELECT
 		END LOOP
@@ -461,7 +461,7 @@ PROCEDURE Clinica IS
 		nota : Text;
 	BEGIN
 		LOOP
-			Delay(100000) -- Simulo trabajo
+			Delay(100.0) -- Simulo trabajo
 			SELECT
 				Medico.AtenderEnfermera
 			ELSE
@@ -484,8 +484,8 @@ PROCEDURE Clinica IS
 		WHILE (intentos < 3 or !fuiAtendido) LOOP
 			SELECT
 				Medico.AtenderPersona
-			OR DELAY 300000
-				Delay(600000);
+			OR DELAY 300.0
+				Delay(600.0);
 				intentos := intentos + 1;
 			END SELECT
 		END LOOP
@@ -599,8 +599,8 @@ PROCEDURE Sistema IS
 		WHILE (resultado != "Todo bien") LOOP
 			SELECT
 				Servidor.EntregarDocumento(documento, resultado)
-			OR DELAY 120000
-				Delay(60000)
+			OR DELAY 120.0
+				Delay(60.0)
 			END SELECT
 		END LOOP
 	END Usuario

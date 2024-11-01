@@ -107,7 +107,7 @@ Monitor Maquina {
 
 Process Escalador::[1..30] {
 	Montaña.entrar();
-	delay(5000) // Pasa por la escalada
+	delay(5.0) // Pasa por la escalada
 	Montaña.salir();
 }
 
