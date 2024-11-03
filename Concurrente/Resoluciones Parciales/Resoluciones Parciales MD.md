@@ -43,3 +43,53 @@ BEGIN
 END BancoCentral
 ```
 
+---
+> Resolver el siguiente problema con Pasaje de Mensajes Sincrónicos (PMS). En una excursión hay una tirolesa que debe ser usada por 20 turistas. Para esto hay un guía y un empleado. El empelado espera a que todos los turistas hayan llegado para darles una charla explicando las medidas de seguridad. Cuando termina la charla los turistas piden usar la tirolesa y esperan a que el guía les vaya dando el permiso de tirarse. El guía deja usar la tirolesa a un cliente a la vez y de acuerdo al orden en que lo van solicitando.  Nota: todos los procesos deben terminar;  suponga que el empleado tienen una función DarCharla() que simula que el empleado está dando la charla, y los turistas tienen una función UsarTitolesa() que simula que está usando la tirolesa.
+
+```c
+Process Turista::[1..20] {
+	Empleado!llegadaTurista
+	Empleado?finCharla
+	Guia!pedidoTirolesa(id)
+	Guia?pasoATirolesa
+	UsarTirolesa()
+	Guia!finTirolesa
+}
+
+Process Empleado {
+	for (int i = 1; i <= 20; i++) {
+		Turista[*]?llegadaTurista
+	}
+	DarCharla()
+	for (int j = 1; j <= 20; j++) {
+		Turista[j]!finCharla
+	}
+}
+
+Process Guia {
+	Int idAct;
+	Cola cola;
+	Bool libre;
+	libre = true;
+	for (int i = 1; i <= 40; i++) {
+		if Turista[*]?pedidoTirolesa(id) -> {
+				if (not libre) {
+					cola.push(id)
+				} else {
+					libre = false
+					idAct = id
+					Turista[id]!pasoATirolesa
+				}
+			} 
+		* Turista[idAct]?finTirolesa -> {
+				if (empty(cola)) {
+					libre = true
+				} else {
+					idAct = cola.pop()
+					Turista[idAct]!pasoATirolesa
+				}	
+			}
+	    fi
+	}
+}
+```

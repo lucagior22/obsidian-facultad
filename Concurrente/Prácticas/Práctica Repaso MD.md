@@ -153,8 +153,9 @@ END
 ```ada
 PROCEDURE Indumentaria IS
 	TASK OficinaCentral IS
-		ENTRY ObtenerCantidadVentas (cantVentas : IN Integer)
-		ENTRY QuieroRecibirID (id : OUT Integer)
+		ENTRY ObtenerCantidadVentas (cantVentas : IN Integer);
+		ENTRY QuieroRecibirID (id : OUT Integer);
+		ENTRY Siguiente;
 	END
 	
 	TASK BODY OficinaCentral IS
@@ -174,6 +175,9 @@ PROCEDURE Indumentaria IS
 					END   
 				END SELECT
 			END LOOP
+			FOR i in 1..100 LOOP
+				ACCEPT Siguiente;
+			END LOOP
 		END LOOP
 	END
 	
@@ -183,9 +187,10 @@ PROCEDURE Indumentaria IS
 		id, cantVentas : Integer;
 	BEGIN 
 		LOOP
-			OficinaCentral.QuieroObtenerID(id)
+			OficinaCentral.QuieroRecibirID(id)
 			cantVentas := ObtenerVentas(id)
 			OficinaCentral.ObtenerCantidadVentas(cantVentas)
+			OficinaCentral.Siguiente
 		END LOOP
 	END
 	

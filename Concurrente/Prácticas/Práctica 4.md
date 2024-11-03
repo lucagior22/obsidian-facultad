@@ -429,6 +429,49 @@ process empleado{
 }
 ```
 
+*Resolución de repaso dia anterior al examen*
+```c
+chan usoCabina(int), finCabina(int, int), cabinaAsignada[1..N](int), ticket[1..N](Ticket), hayPedido(int)
+
+Process Cliente::[id : 1..N] {
+	Ticket ticket;
+	int idCabina;
+	send usoCabina(id);
+	receive cabinaAsignada[idCabina];
+	UsarCabina();
+	send finCabina(idCabina, id);
+	receive ticket[id](ticket);
+}
+
+Process Empleado {
+	Cola cabinasLibres;
+	Int idCabina, idCliente;
+	Ticket ticket;
+	for (int i = 1; i <= 10; i++) {
+		cabinasLibres.push(i);
+	}
+	while (True) {
+		receive hayPedido();
+		if (!empty(finCabina)) {
+			receive finCabina(idCabina, idCliente)
+			cabinasLibres.push(idCabina)
+			ticket = Cobrar(idCliente)
+			send ticket[id](ticket)
+		} else {
+			receive usoCabina(idCliente)
+			if (empty(cabinasLibres)) {
+				receive hayPedido()
+				receive finCabina(idCabina, idCliente)
+				cabinasLibres.push(idCabina)
+				ticket = Cobrar(idCliente)
+				send ticket[id](ticket)
+			}
+			send cabinaAsignada[idCliente](cabinasLibres.push())	
+		}
+	}
+}
+```
+
 ---
 # 5
 > Resolver la administración de 3 impresoras de una oficina. Las impresoras son usadas por N administrativos, los cuales están continuamente trabajando y cada tanto envían documentos a imprimir. Cada impresora, cuando está libre, toma un documento y lo imprime, de acuerdo con el orden de llegada. 

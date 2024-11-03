@@ -441,8 +441,7 @@ PROCEDURE Clinica IS
 					ACCEPT AtenderEnfermera (solicitud : IN Text) DO
 						trabajarSolicitud(solicitud)
 					END AtenderEnfermera
-			OR
-				WHEN (AtenderPersona'Count == 0 and AtenderEnfermera'Count == 0) =>
+			ELSE
 					SELECT
 						Escritorio.TomarNota(nota)
 						trabajarNota(nota)
@@ -530,6 +529,9 @@ Consultas MIAS:
 		- Analisis con amigos:
 			- El primer *SELECT* **SIEMPRE** va a responder a un *ENTRY CALL* o en todo caso se queda dormido indefinidamente en el *SELECT*.
 			- El segundo *SELECT* puede no responder a un *ENTRY CALL* dado el caso de que se ejecuten los dos *ELSE*. Entendemos que esto puede derivar en *BUSY WAITING* ya que la tarea loopearia en un un select del que sale sin responder un *ENTRY CALL*.
+			- EL SEGUNDO SELECT ES ERRÓNEO:
+				- Se estan mezclando en un mismo *SELECT*,  *ENTRY CALLS* y *ACCEPTS*
+				- No borro los puntos a
  
 ```ada
 -- Primer SELECT
@@ -608,6 +610,47 @@ PROCEDURE Sistema IS
 	Usuarios := array (1..U) of Usuario;
 BEGIN
 END Sistema
+```
+
+*Resolución de repaso pre-parcial*
+```ADA
+PROCEDURE Universidad IS
+	TASK Servidor IS
+		ENTRY RevisarDocumento(documento : IN Text, status : OUT String)
+	END Servidor
+	
+	TASK BODY Servidor IS
+	BEGIN
+		LOOP
+			ACCEPT RevisarDocumento(documento : IN Text, status : OUT String) DO
+				status := revisar(documento)
+			END RevisarDocumento
+		END LOOP
+	END Servidor
+	
+	TASK TYPE Usuario;
+	
+	TASK BODY Usuario IS
+		documento : Text;
+		status : String;
+	BEGIN
+		status := "Error";
+		documento := trabajar();
+		WHILE (status == "Error") LOOP
+			SELECT
+				Servidor.RevisarDocumento(documento, status)
+				IF (status == "Error") DO
+					corregirDocumento(documento)
+				END IF
+			OR DELAY 120.0
+				DELAY 60.0
+			END SELECT
+		END LOOP
+	END Usuario
+	
+	Usuarios : array (1..U) of Usuario;
+BEGIN
+END
 ```
 
 ---
