@@ -82,6 +82,48 @@ Process Estacion {
 ---
 # 3
 > Resolver el siguiente problema con PMA. En un negocio de cobros digitales hay P personas que deben pasar por la única caja de cobros para realizar el pago de sus boletas. Las personas son atendidas de acuerdo con el orden de llegada, teniendo prioridad aquellos que deben pagar menos de 5 boletas de los que pagan más. Adicionalmente, las personas embarazadas tienen prioridad sobre los dos casos anteriores. Las personas entregan sus boletas al cajero y el dinero de pago; el cajero les devuelve el vuelto y los recibos de pago.
+```c
+chan pedidoSinPrioridad(int, Array<Boleta>, double), pedidoPrioridad(int, Array<Boleta>, double), pedidoEmbarazada(int, Array<Boleta>, double), respuesta[1..P](), hayPedido();
+
+Process Persona::[id : 1..P] {
+	bool soyEmbarazada = cargarEmbarazo()
+	double monto = cargarDinero()
+	double vuelto;
+	Array<Boleta> boletas = cargarBoletas()
+	Array<Recibo> recibos;
+	
+	if (soyEmbarazada) {
+		send pedidoEmbarazada(id, boletas, monto)
+	} else if (boletas.length < 5) {
+		send pedidoPrioridad(id, boletas, monto)
+	} else {
+		send pedidoSinPrioridad(id, boletas, monto)
+	}
+	send hayPedido()
+	receive respuesta[id](vuelto, recibos)	
+}
+
+Process Cajero {
+	double monto;
+	double vuelto;
+	int id;
+	Array<Boleta> boletas;
+	Array<Recibo> recibos;
+	
+	while (true) {
+		receive hayPedido()
+		if (!pedidoEmbarazada.empty) {
+			receive pedidoEmbarazada(id, boletas, monto)
+		} else if (!pedidoPrioridad.empty) {
+			receive pedidoPrioridad(id, boletas, monto)
+		} else {
+			receive pedidoSinPrioridad(id, boletas, monto)
+		}
+		(recibos, vuelto) = cobrar(boletas, monto)
+		send respuesta[id](vuelto, recibos)
+	}
+}
+```
 
 
 ---

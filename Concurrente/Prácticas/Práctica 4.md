@@ -814,6 +814,61 @@ process Admin {
 }
 ```
 
+> En un examen final hay N alumnos y P profesores. Cada alumno resuelve su examen, lo entrega y espera a que alguno de los profesores lo corrija y le indique la nota. Los profesores corrigen los exámenes respetando el orden en que los alumnos van entregando. Considerando que P>1. Los alumnos no comienzan a realizar su examen hasta que todos hayan llegado al aula. Nota: maximizar la concurrencia; no generar demora innecesaria; todos los procesos deben terminar su ejecución
+```c
+Process Profesor::[id : 1..P] {
+	bool fin = false;
+	int idAlumno, nota;
+	text examen;
+	
+	while (!fin) {
+		Admin!profesorLibre(id)
+		if Admin?entregaExamen(idAlumno, examen) -> {
+				nota = corregir(examen)
+				Alumno[idAlumno]!entregaCorreccion(nota)
+			}
+		* Admin?finCorrecciones -> {
+				 fin = true
+			}
+	}
+}
+
+Process Alumno::[id : 1..N] {
+	text examen;
+	int nota;
+	Admin!llegadaAlumno()
+	Admin!comenzar()
+	examen = hacerExamen()
+	Admin!entregaExamen(id, examen)
+	Profesor[*]?entregaCorreccion(nota)
+}
+
+Process Admin {
+	Cola entregas;
+	int entregasRestantes = N;
+	
+	for i in 1..N {
+		Alumno[*]?llegadaAlumno()
+	}
+	for i in 1..N {
+		Alumno[*]?comenzar()
+	}
+	while (entregasRestantes < 0) {
+		if Alumno[*]?entregaExamen(idAlumno, examen) -> {
+				entregas.push((idAlumno, examen));
+			}
+		* (!empty(entregas)); Profesor[*]?profesorLibre(idProfesor) -> {
+				 Profesor[idProfesor]!engregaExamen(entregas.pop());
+				 entregasRestantes--;
+			}
+	}
+	
+	for i in 1..P {
+		Profesor[i]!finCorrecciones;	
+	}
+}
+```
+
 # 4
 > En una exposición aeronáutica hay un simulador de vuelo (que debe ser usado con exclusión mutua) y un empleado encargado de administrar su uso. Hay P personas que esperan a que el empleado lo deje acceder al simulador, lo usa por un rato y se retira. Nota: cada persona usa sólo una vez el simulador.
 > a) Implemente una solución donde el empleado sólo se ocupa de garantizar la exclusión mutua. 
