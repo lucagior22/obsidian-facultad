@@ -1,15 +1,15 @@
 # 1
 a)
-##### Primer paso
+## Primer paso
 Se debe resolver la IP del nombre www.redes.unlp.edu.ar, para esto se consulta recursivamente al DNS local, este puede contar con la ip del dominio en su caché y este resuelve la IP retornandola al cliente. Caso contrario, el DNS local comienza a desglosar el dominio y asi busca iterativamente la ip consultando en un principio al servidor ROOT, este redirecciona al DNS local al siguiente "escalón" del dominio ".ar.", este redirecciona hacia "edu.ar." y asi consecutivamente se redirecciona al *resolver* (DNS local) hasta el servidor DNS que contenga el registro NS con el valor de la IP asociada al dominio "www.redes.unlp.edu.ar".  
-##### Segundo paso
+## Segundo paso
 Se realiza la consulta HTTP:
 ```http
 GET contacto.html HTTP/1.1
 Host: www.redes.unlp.edu.ar
 ```
 Se realiza una petición de tipo GET, solicitando el recurso *contacto.html* al dominio www.redes.unlp.edu.ar. 
-##### Tercer paso
+## Tercer paso
 Se recibe la respuesta HTTP desde el servidor:
 ```http
 HTTP/1.1 200 OK 
@@ -30,7 +30,7 @@ No es iterativa, esta es recursiva ya que el cliente consulta y espera la respue
 
 c)
 	i) 1.1, esto se ve en el header `Connection: keep-alive
-	ii)  ```
+	ii) 
 ```http	 
 	GET contacto.html HTTP/1.1
 	Host: www.redes.unlp.edu.ar
