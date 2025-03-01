@@ -84,3 +84,26 @@ classDiagram
 - Un *Contexto* redirige peticiones de los clientes a su estrategia. 
 	- Los clientes crean un objeto *Estrategia Concreta* y se la envian al contexto previo a su petición. 
 	- Los clientes interactuan exclusivamente con el *Contexto*.
+
+# Template Method
+
+## Propósito
+Define en una operación el esqueleto de un algoritmo, delegando en las subclases algunos de sus pasos. Permite que las subclases redefinan ciertos pasos de un algoritmo sin cambiar su estructura.
+
+## Aplicabilidad
+- Para implementar las partes de un algoritmo que no cambian y dejar que sean las subclases quienes implementen el comportamiento que puede variar.
+- Cuando el comportamiento repetido de varias subclases debería factorizarse y ser localizado en una clase común para evitar código duplicado. Se identifican las diferencias en el código existente y se las separa en nuevas operaciones. Por último, sustituimos el código que cambia por un método que llama a una de estas nuevas operaciones.
+- Para controlar las extensiones de las subclases. Podemos definir un método plantilla que llame a operaciones "de enganche" en determinados puntos, permitiendo así las extensiones sólo en esos puntos.
+
+## Estructura
+![[Pasted image 20250207173102.png]]
+
+## Participantes
+- **Clase Abstracta**
+	- Define operaciones primitivas abstractas que son definidas por las subclases para implementar los pasos de un algoritmo.
+	- Implementa un método plantilla que define el esqueleto de un algoritmo. El método plantilla llama a las operaciones primitivas asi como a operaciones definidas en su clase o a las de otros objetos.
+- **Clase Concreta**
+	- Implementa las operaciones primitivas para realizar los pasos del algoritmo específicos de las subclases.
+
+## Colaboraciones
+- *Clase Concreta* se basa en *Clase Abstracta* para implementar los pasos de un algoritmo que no cambian.
