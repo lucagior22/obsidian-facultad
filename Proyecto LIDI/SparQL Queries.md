@@ -95,6 +95,7 @@ PREFIX owl: <http://www.w3.org/2002/07/owl#>
 # - Precio en dólares.
 # - Precio por m2.
 # - Ubicación Chapadmalal.
+# ! La práctica decía La Plata pero en el .ttl no tenemos data de LP
 
 SELECT ?value ?spaceValueM2 ?valueM2Final ?currency ?address ?cityLabel
 WHERE {
@@ -114,7 +115,7 @@ WHERE {
       io:city ?city.
 
     # Para hacer legible la información de la ciudad, busco el label
-    # Primero filtro por Brandsen y después me guardo los labels en una variable para el select.
+    # Primero filtro por Chapadmalal y después me guardo los labels en una variable para el select.
     ?city rdfs:label "Chapadmalal"^^xsd:string;
       rdfs:label ?cityLabel.
 
